@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 	//"html/template"
-	"walker"
+	"util"
 	"regexp"
 	"io/ioutil"
 	"path/filepath"
-	"runtime"
+	//"runtime"
 )
 
 var (
@@ -17,6 +17,7 @@ var (
 	docPath     = "/Users/memee/Downloads/svn/ps-fe"
 	docxConf = "./docx-conf.json"
 	theme = "default"
+	port = "8910"
 )
 
 // 路由容器
@@ -31,7 +32,7 @@ var static func(http.ResponseWriter, *http.Request)
 func main() {
 	initial()
 	http.HandleFunc("/", allRoutes)
-	err := http.ListenAndServe(":8911", nil)
+	err := http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -44,19 +45,23 @@ func setRegRoute(p string, h func(http.ResponseWriter, *http.Request)) {
 
 // 预处理
 func initial() {
-	// walker.ReadDirRs()
+	util.ReadDirRs()
+
+	// 获取当前文件路径
+	// _, runp, _, _ := runtime.Caller(1)
+	// dirname := filepath.Dir(runp)
 
     setRegRoute(".+.md$", func(w http.ResponseWriter, r *http.Request) {
-		rsHTML := walker.GetRsHTML(r.URL.Path)
+		rsHTML := util.GetRsHTML(filepath.Join(docPath, r.URL.Path))
         fmt.Fprintf(w, string(rsHTML))
     })
 
-	// 获取当前文件路径
-	_, runp, _, _ := runtime.Caller(1)
-	dirname := filepath.Dir(runp)
+	docStatic := staticFn(docPath)
+	setRegRoute(".+.[png|jpg|gif|js|css]$", docStatic)
 
 	// staticFilePath := "../../themes/" + theme
-	//static = staticFn(filepath.Join(dirname, staticFilePath))
+	// themeStatic := staticFn(filepath.Join(dirname, staticFilePath))
+	// setRegRoute(".+.png$", docStatic)
 }
 
 // 路由分发
@@ -92,7 +97,6 @@ func staticFn(parentPath string) func(http.ResponseWriter, *http.Request){
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		fmt.Fprintf(w, string(fileContent))
 	}
 }
