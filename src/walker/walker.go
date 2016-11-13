@@ -12,7 +12,9 @@ var (
 	docPath    = "/Users/memee/Downloads/svn/ps-fe"
 	ignoreDirs = []string{"img", ".git", ".svn", "courseware", "headline", "imgs", "js", "less", "assets"}
 	mdReg = ".+.md$"
+	// /^\s*#+\s?([^#\r\n]+)/
 	titleReg = regexp.MustCompile("^[\t\n\f\r ]*#+[\t\n\f\r ]?([^#\r\n]+)")
+	// /<title>(.+?)<\/title>/
 	htmlTitleReg = regexp.MustCompile("<title>(.+?)</title>")
 )
 
@@ -41,41 +43,32 @@ func ReadDirRs() {
 			extName := filepath.Ext(fc.path)
 			if err == nil {
 				if isMd || extName == ".html" || extName == ".htm"{
-					content := getConent(fc.path)
-					fc.title = getTitle(extName, content)
-					fmt.Println("title->%s", fc.title)
+					content := GetConent(fc.path)
+					fc.title = GetTitle(extName, content)
 					// markdown转换html
-					convMd(content)
+					ConvMd(content)
 				}
 			}
 			
 		}
 	}
 }
-/*
-		if (ext === '.md') {
-            // /^\s*\#+\s?(.+)/
-            // /^\s*#+\s?([^#\s]+)/
-            // /^\s*\#+\s?([^\#]+)\s*\#?/
-            titleArr =  /^\s*#+\s?([^#\r\n]+)/.exec(content) || [];
-            return titleArr[1] || '';
-        }
-        else if (ext === '.html' || ext === '.htm'){
-            titleArr = /<title>(.+?)<\/title>/.exec(content) || [];
-            return titleArr[1] || '';
-        }
 
-*/
-
+func GetRsHTML (path string) []byte{
+	content := GetConent(path)
+	rsHtml := ConvMd(content)
+	return rsHtml
+}
 
 // md转html
-func convMd(content []byte) {
+func ConvMd(content []byte) []byte{
 	output := blackfriday.MarkdownBasic(content)
-	ioutil.WriteFile("./md", output, 0777)
+	//ioutil.WriteFile(".+.md$", output, 0777)
+	return output
 }
 
 // 获取标题
-func getTitle(extName string, content []byte) string {
+func GetTitle(extName string, content []byte) string {
 	contentStr := string(content)
 	var title string
 	if extName == ".md" {
@@ -87,10 +80,11 @@ func getTitle(extName string, content []byte) string {
 }
 
 // 获取文档内容
-func getConent(path string) []byte {
-	content, err := ioutil.ReadFile(path)
+func GetConent(path string) []byte {
+	absPath := filepath.Join(docPath,path)
+	content, err := ioutil.ReadFile(absPath)
+
 	if err != nil {
-		fmt.Println("error path->%s", path)
 		log.Fatal(err)
 	}
 	return content

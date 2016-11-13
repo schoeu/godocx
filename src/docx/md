@@ -1,107 +1,0 @@
-<h1>常用文档</h1>
-
-<blockquote>
-<p>常用文档可自行添加至相应目录下</p>
-</blockquote>
-
-<style>
-
-    .docx-ml1em{
-        display: inline-block;
-        margin-left: 1em;
-        line-height: 24px;
-    }
-
-    .docx-readme.panel-group .panel+.panel {
-        margin-top: 10px;
-    }
-</style>
-
-<div class="panel-group docx-readme" id="accordion" role="tablist" aria-multiselectable="true">
-
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingOne">
-      <div class="panel-title">
-          栅格&SF&MIP
-      </div>
-    </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
-      <div class="panel-body">
-
-        <!--  栅格&SF&MIP --> 
-        <a href="http://pmd.baidu.com/" class="">pmd栅格文档</a> 
-        <a href="http://mip.baidu.com" class="docx-ml1em">mip文档</a> 
-        <a href="http://superframe.baidu.com/" class="docx-ml1em">superframe文档</a>
-
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingTwo">
-      <div class="panel-title">
-        WISE
-      </div>
-    </div>
-    <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
-      <div class="panel-body">
-
-        <!--  无线阿拉丁 --> 
-        <a href="/aladdin/new-reading/gaishu.md" class="">新人必读</a>
-        <a href="/aladdin/aladdin_team_convention.md" class="docx-ml1em">团队公约</a> 
-        <a href="/aladdin/developer_convention.md" class="docx-ml1em">开发者公约</a> 
-        <a href="/aladdin/wise/standard/base_standard.md" class="docx-ml1em">WISE基础规范</a> 
-        <a href="/aladdin/wise/santa/develop.md" class="docx-ml1em">哥伦布文档</a> 
-        <a href="/aladdin/tpldev/help.md" class="docx-ml1em">平台使用手册</a>
-        <a href="/aladdin/wise/tongji/log.md" class="docx-ml1em">wise统计日志</a> 
-        <a href="/aladdin/wise/platform/zhanzhangpingtai.md" class="docx-ml1em">站长平台使用手册</a>
-        <a href="/aladdin/wise/platform/mubanpingtnew.md" class="docx-ml1em">模板平台使用手册</a> 
-        <a href="/aladdin/wise/standard/sigma.md" class="docx-ml1em">sigma2.0文档</a> 
-        <a href="/aladdin/wise/devdocs/tclink.md" class="docx-ml1em">tc链接</a> 
-        <a href="/aladdin/new-reading/newer.md" class="docx-ml1em">项目从0到1串讲</a> 
-        
-
-      </div>
-    </div>
-  </div>
-  <div class="panel panel-default">
-    <div class="panel-heading" role="tab" id="headingThree">
-      <div class="panel-title">
-        WISE日志
-      </div>
-    </div>
-    <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-      <div class="panel-body">
-
-        <!--  wise日志 --> 
-        <a href="/log/wise/0-helloworld.md" class="">无线日志必读</a>
-        <a href="/log/wise/show/show.md" class="docx-ml1em">无线展现日志</a> 
-        <a href="/log/pc/click.md" class="docx-ml1em">PC结果页点击日志</a> 
-
-      </div>
-    </div>
-  </div>
-  
-
-<p><div class="panel panel-default">
-      <div class="panel-heading" role="tab" id="headingThree">
-        <div class="panel-title">
-          PC
-        </div>
-      </div>
-      <div id="collapseThree" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingThree">
-        <div class="panel-body"></p>
-
-<pre><code>      &lt;!--  pc --&gt; 
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/UIbase.md&quot; class=&quot;&quot;&gt;CSS基础样式&lt;/a&gt;
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/UIgrid.md&quot; class=&quot;docx-ml1em&quot;&gt;UI栅格化设计&lt;/a&gt; 
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/cBase.md&quot; class=&quot;docx-ml1em&quot;&gt;c-base解析&lt;/a&gt; 
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/suportHttps.md&quot; class=&quot;&quot;&gt;https&lt;/a&gt;
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/topAlaStandard.md&quot; class=&quot;docx-ml1em&quot;&gt;通栏开发规范&lt;/a&gt; 
-      &lt;a href=&quot;/aladdin/pc-doc/pcspans/UI3.0.md&quot; class=&quot;docx-ml1em&quot;&gt;UI设计规范&lt;/a&gt; 
-
-    &lt;/div&gt;
-  &lt;/div&gt;
-&lt;/div&gt;
-</code></pre>
-
-<p></div></p>
