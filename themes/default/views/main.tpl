@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{title}}</title>
     <link type="text/css" rel="stylesheet" href="/stylesheets/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="/stylesheets/md.css"/>
     <link type="text/css" rel="stylesheet" href="/stylesheets/metisMenu.min.css"/>
@@ -22,21 +21,6 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="/">{{headText}}</a>
-                    {{#if links}}
-                        <ul class="user-menu">
-                            <li class="dropdown pull-right">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{label}}<span class="caret"></span></a>
-                                <ul class="dropdown-menu" role="menu">
-                                    {{#each links}}
-                                        <li>
-                                            <a href="{{url}}">{{name}}</a>
-                                        </li>
-                                    {{/each}}
-                                </ul>
-                            </li>
-                        </ul>
-                    {{/if}}
                 </div>
             </div><!-- /.container-fluid -->
         </nav>
@@ -56,25 +40,12 @@
                     </div>
 
                 </form>
-                <ul class="nav menu metismenu docx-navs" id="docx-navs">
-                    {{{navData}}}
-                    <li role="presentation" class="divider"></li>
-                    {{#if supportInfo}}
-                        <li><a href="{{supportInfo}}"> 支持 </a></li>
-                    {{/if}}
-                </ul>
             </div>
         </div><!--/.sidebar-->
 
         <div class="col-sm-9 col-sm-offset-3 col-lg-9 col-lg-offset-3 main docx-marked-wrap container-fluid">
             <div>
                 <div class="row">
-                    <ol class="breadcrumb">
-                        <li>{{headText}}</li>
-                        {{#each brandData}}
-                        <li class="active">{{this}}</li>
-                        {{/each}}
-                    </ol>
                 </div><!--/.row-->
 
                 <div class="row">
@@ -82,7 +53,7 @@
                         <div class="docx-panel docx-panel-default">
                             <div class="markdown-body">
                                 <div class="docx-marked">
-                                    {{{mdData}}}
+                                    {{$.mdData}}
                                 </div>
                             </div>
                         </div>

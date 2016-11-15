@@ -1,15 +1,18 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"log"
 	"net/http"
 	//"html/template"
 	"util"
 	"regexp"
-	"io/ioutil"
+	// "io/ioutil"
 	"path/filepath"
 	//"runtime"
+	//"io"
+	"os"
+	"fmt"
 )
 
 var (
@@ -20,6 +23,10 @@ var (
 	port = "8910"
 )
 
+const (
+	listDir = 0x0001
+)
+
 // 路由容器
 type regRoute struct {
     pattern string
@@ -27,11 +34,15 @@ type regRoute struct {
 }
 
 var routes = []regRoute{}
-var static func(http.ResponseWriter, *http.Request)
+
+var static = staticServer("../../themes/" + theme + "/static")
 
 func main() {
 	initial()
 	http.HandleFunc("/", allRoutes)
+	//staticServer("static", "../../themes/" + theme, 0)
+	
+
 	err := http.ListenAndServe(":" + port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
@@ -45,7 +56,7 @@ func setRegRoute(p string, h func(http.ResponseWriter, *http.Request)) {
 
 // 预处理
 func initial() {
-	util.ReadDirRs()
+	//util.ReadDirRs()
 
 	// 获取当前文件路径
 	// _, runp, _, _ := runtime.Caller(1)
@@ -53,20 +64,17 @@ func initial() {
 
     setRegRoute(".+.md$", func(w http.ResponseWriter, r *http.Request) {
 		rsHTML := util.GetRsHTML(filepath.Join(docPath, r.URL.Path))
-        fmt.Fprintf(w, string(rsHTML))
+		locals := make(map[string]interface{})
+		locals["mdData"] = string(rsHTML)
+        //io.WriteString(w, string(rsHTML))
+		util.RenderTpl("../../themes/" + theme + "/views/main.tpl", locals, w)
     })
-
-	docStatic := staticFn(docPath)
-	setRegRoute(".+.[png|jpg|gif|js|css]$", docStatic)
-
-	// staticFilePath := "../../themes/" + theme
-	// themeStatic := staticFn(filepath.Join(dirname, staticFilePath))
-	// setRegRoute(".+.png$", docStatic)
+	fmt.Println(routes)
 }
 
 // 路由分发
 func allRoutes(w http.ResponseWriter, r *http.Request) {
-	isHit := false
+
     // 添加路由
     for _, v := range routes {
         reg, err := regexp.Compile(v.pattern)
@@ -74,29 +82,43 @@ func allRoutes(w http.ResponseWriter, r *http.Request) {
             continue
         }
         if reg.MatchString(r.URL.Path) {
-			isHit = true
             v.handler(w, r)
         }
     }
 
-	if !isHit {
-		// 静态文件路径
-		//static(w, r)
-	}
+	static(w,r)
 }
 
-// 静态文件路由
-func staticFn(parentPath string) func(http.ResponseWriter, *http.Request){
+// 检测文件是否存在
+func isExists(path string) bool {
+	_, err := os.Stat(path)
+	if err != nil {
+		return true
+	}
+	return os.IsExist(err)
+}
+
+// 静态文件服务器
+// func staticServer(prefix string, staticDir string, flags int){
+// 	http.HandleFunc(prefix, func(w http.ResponseWriter, r *http.Request) {
+// 		file := staticDir + r.URL.Path[len(prefix)-1:]
+// 		if (flags & listDir) == 0 {
+// 			if exists := isExists(file); !exists { 
+// 				http.NotFound(w, r)
+// 				return
+// 			} 
+// 		}
+// 		http.ServeFile(w, r, file)
+// 	})
+// }
+
+
+func staticServer(prefix string) func(http.ResponseWriter,*http.Request){
 	return func (w http.ResponseWriter, r *http.Request) {
-		fileP := r.URL.Path
-		crtPath := filepath.Join(parentPath, fileP)
-
-		fmt.Println("staticFn-> %s", crtPath)
-
-		fileContent, err := ioutil.ReadFile(crtPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-		fmt.Fprintf(w, string(fileContent))
+		p := r.URL.Path
+		file := filepath.Join(prefix, p)
+		fmt.Println("file", file)
+		http.ServeFile(w, r, file)
+		return
 	}
 }
