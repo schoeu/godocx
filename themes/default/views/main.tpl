@@ -53,7 +53,7 @@
                         <div class="docx-panel docx-panel-default">
                             <div class="markdown-body">
                                 <div class="docx-marked">
-                                    {{$.mdData}}
+                                    {{. | html}}
                                 </div>
                             </div>
                         </div>
