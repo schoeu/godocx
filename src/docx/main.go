@@ -1,50 +1,39 @@
 package main
 
 import (
-	// "fmt"
 	"log"
 	"net/http"
-	//"html/template"
-	"util"
 	"regexp"
-	// "io/ioutil"
+	"util"
 	"path/filepath"
-	//"runtime"
-	//"io"
-	"os"
 	"fmt"
-	"cmd/internal/pprof/tempfile"
+	"os"
 )
 
 var (
 	index    = "/readme.md"
-	docPath     = "/Users/memee/Downloads/svn/ps-fe"
+	docPath  = "/Users/memee/Downloads/svn/ps-fe"
 	docxConf = "./docx-conf.json"
-	theme = "default"
-	port = "8910"
-)
-
-const (
-	listDir = 0x0001
+	theme    = "default"
+	port     = "8910"
+	mdReg = ".+.md$"
+	staticRoot = "../../themes/" + theme
 )
 
 // 路由容器
 type regRoute struct {
-    pattern string
-    handler func (w http.ResponseWriter, r *http.Request)
+	pattern string
+	handler func(w http.ResponseWriter, r *http.Request)
 }
 
 var routes = []regRoute{}
 
-var static = staticServer("../../themes/" + theme + "/static")
+var static = staticServer(staticRoot + "/static")
 
 func main() {
 	initial()
-	http.HandleFunc("/", allRoutes)
 
-	//staticServer("static", "../../themes/" + theme, 0)
-
-	err := http.ListenAndServe(":" + port, nil)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -52,7 +41,7 @@ func main() {
 
 // 设置路由公共方法
 func setRegRoute(p string, h func(http.ResponseWriter, *http.Request)) {
-    routes = append(routes, regRoute{p, h})
+	routes = append(routes, regRoute{p, h})
 }
 
 // 预处理
@@ -61,38 +50,31 @@ func initial() {
 	// 获取当前文件路径
 	// _, runp, _, _ := runtime.Caller(1)
 	// dirname := filepath.Dir(runp)
+	http.HandleFunc("/", allRoutes)
+	// setRegRoute(".+.md$", mdHandler)
 
-    setRegRoute(".+.md$", func(w http.ResponseWriter, r *http.Request) {
-		rsHTML := util.GetRsHTML(filepath.Join(docPath, r.URL.Path))
-		locals := make(map[string]interface{})
-		locals["mdData"] = string(rsHTML)
-		
-        //io.WriteString(w, string(rsHTML))
+}
 
-		util.RenderTpl("../../themes/" + theme + "/views/main.tpl", locals, w)
-    })
-	fmt.Println(routes)
+// markdown 文件处理
+func mdHandler(mdRelPath string, w http.ResponseWriter) {
+	mdPath := filepath.Join(docPath, mdRelPath)
+	content := util.GetRsHTML(mdPath)
+	locals := make(map[string]interface{})
+	locals["mdData"] = string(content)
+	util.RenderTpl(staticRoot + "/views/main.tmpl", locals, w)
 }
 
 // 路由分发
 func allRoutes(w http.ResponseWriter, r *http.Request) {
-	var routePath = r.URL.Path
-
+	routePath := r.URL.Path
+	fmt.Println(routePath)
 	if routePath == "/" {
-		http.RedirectHandler("/re", http.StatusFound)
-	} 
-	// 匹配路由
-	for _, v := range routes {
-		reg, err := regexp.Compile(v.pattern)
-		if err != nil {
-			continue
-		}
-		if reg.MatchString(r.URL.Path) {
-			v.handler(w, r)
-		}
+		mdHandler(index, w)
+	} else if isMd, err :=regexp.MatchString(mdReg, routePath); err != nil && isMd {
+		mdHandler(routePath, w)
+	} else {
+		static(w, r)
 	}
-
-	static(w,r)
 }
 
 // 检测文件是否存在
@@ -104,11 +86,10 @@ func isExists(path string) bool {
 	return os.IsExist(err)
 }
 
-func staticServer(prefix string) func(http.ResponseWriter,*http.Request){
-	return func (w http.ResponseWriter, r *http.Request) {
+func staticServer(prefix string) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 		file := filepath.Join(prefix, p)
-		fmt.Println("file", file)
 		http.ServeFile(w, r, file)
 		return
 	}
