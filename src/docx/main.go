@@ -26,6 +26,10 @@ type regRoute struct {
 	handler func(w http.ResponseWriter, r *http.Request)
 }
 
+type PageData struct {
+    mdData  string
+}
+
 var routes = []regRoute{}
 
 var static = staticServer(staticRoot + "/static")
@@ -56,22 +60,27 @@ func initial() {
 }
 
 // markdown 文件处理
-func mdHandler(mdRelPath string, w http.ResponseWriter) {
+func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	mdPath := filepath.Join(docPath, mdRelPath)
 	content := util.GetRsHTML(mdPath)
-	locals := make(map[string]interface{})
-	locals["mdData"] = string(content)
-	util.RenderTpl(staticRoot + "/views/main.tmpl", locals, w)
+	
+	//TODO pjax branch
+	p := PageData{}
+	p.mdData = string(content)
+	fmt.Println(p)
+	util.RenderTpl(staticRoot + "/views/main.tmpl", p, w)
 }
 
 // 路由分发
 func allRoutes(w http.ResponseWriter, r *http.Request) {
 	routePath := r.URL.Path
+	isMd, _ :=regexp.MatchString(mdReg, routePath)
 	fmt.Println(routePath)
 	if routePath == "/" {
-		mdHandler(index, w)
-	} else if isMd, err :=regexp.MatchString(mdReg, routePath); err != nil && isMd {
-		mdHandler(routePath, w)
+		mdHandler(index, w, r)
+	} else if  isMd {
+		fmt.Println("ismd", routePath)
+		mdHandler(routePath, w, r)
 	} else {
 		static(w, r)
 	}
@@ -94,3 +103,4 @@ func staticServer(prefix string) func(http.ResponseWriter, *http.Request) {
 		return
 	}
 }
+

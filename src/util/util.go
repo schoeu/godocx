@@ -190,5 +190,4 @@ func RenderTpl(path string, data interface{}, w http.ResponseWriter) {
 		return
 	}
 	t.Execute(w, data)
-	return
 }
