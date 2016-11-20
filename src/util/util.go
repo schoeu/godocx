@@ -107,16 +107,6 @@ func ReadDirRs() []fileCache{
 
 
 	makeDomTree(docPath, &docTree)
-	// sep := string(filepath.Separator)
-	// docPathReg := regexp.MustCompile(docPath)
-	// filepath.Walk(docPath, func (fPath string, info os.FileInfo, err error) error {
-	// 	relPath := docPathReg.ReplaceAllString(fPath, "")
-	// 	justDir := filepath.Dir(relPath)
-	// 	pathArr := strings.Split(justDir, sep)
-	// 	fmt.Println(relPath,"~~~~",pathArr)
-	// 	return nil
-	// })
-
 	return docTree
 
 	// fmt.Println(docTree, cap(docTree), len(docTree))
@@ -137,8 +127,8 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 		if isDir {
 			//fmt.Println("file",file.Name())
 			fileName := file.Name()
-			//hitted := indexOf(ignoreDirs, fileName)
-			//if hitted > -1 {
+			hitted := indexOf(ignoreDirs, fileName)
+			if !hitted {
 				subFileCache := make([]fileCache, 0)
 				
 				// 如果在目录map内有值，则目录名为设定值，没有则默认为文件夹名
@@ -153,9 +143,9 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 				*ctt = append(*ctt, fc)
 				
 				makeDomTree(filepath.Join(crtPath, file.Name()), fc.child)
-			//}
+			}
 		} else {
-			fc.path = filepath.Join(docPath, docName)
+			fc.path = docName
 			isMd, err := regexp.MatchString(mdReg, fc.path)
 			extName := filepath.Ext(fc.path)
 			if err == nil {
@@ -175,32 +165,11 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 func MakeNav(treeData *[]fileCache) string{
 	htmlStr := ""
 	makeNavHtml(&htmlStr, treeData)
-
 	fmt.Println("htmlStr", htmlStr)
-
 	return htmlStr
 }
 
-/*
-makeNav: function (dirs) {
-        if (Array.isArray(dirs) && dirs.length) {
-            for(var i = 0; i< dirs.length; i++) {
-                var item = dirs[i] || {};
-                if (!item) {
-                    continue;
-                }
-                if (item.type === 'file') {
-                    htmlStr += '<li class="nav nav-title docx-files" data-path="' + item.path + '" data-title="' + item.title + '"><a href="' + item.path + '">' + item.title + '</a></li>';
-                }
-                else if (item.type === 'dir') {
-                    htmlStr += '<li data-dir="' + item.path + '" data-title="' + item.displayName + '" class="docx-dir"><a href="#" class="docx-dirsa">' + item.displayName + '<span class="fa arrow"></span></a><ul class="docx-submenu">';
-                    this.makeNav(item.child);
-                    htmlStr += '</ul></li>';
-                }
-            }
-        }
-    }
-*/
+// 生成目录树，TODO: 使用template
 func makeNavHtml (str *string, data *[]fileCache) {
 	for _, v := range *data {
 		fileType := v.ty
@@ -288,11 +257,11 @@ func isExists(path string) bool {
 }
 
 // []string indexOf
-func indexOf(s []string, oriVal string) int{
-	for idx, val := range s {
+func indexOf(s []string, oriVal string) bool{
+	for _, val := range s {
 		if val == oriVal {
-			return idx
+			return true
 		}
 	}
-	return -1
+	return false
 }
