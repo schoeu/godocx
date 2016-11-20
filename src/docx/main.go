@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"fmt"
 	"os"
+	"strings"
+	"html/template"
 )
 
 var (
@@ -31,8 +33,6 @@ type PageData struct {
 }
 
 var routes = []regRoute{}
-
-var static = staticServer(staticRoot + "/static")
 
 func main() {
 	initial()
@@ -65,24 +65,28 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	content := util.GetRsHTML(mdPath)
 	
 	//TODO pjax branch
-	p := PageData{}
-	p.mdData = string(content)
-	fmt.Println(p)
-	util.RenderTpl(staticRoot + "/views/main.tmpl", p, w)
+	// p := PageData{}
+	isPjax := r.Header.Get("x-pjax") == "true"
+	// 如果是pajx请求则返回片段，其他返回整模板
+	if isPjax {
+		fmt.Fprintf(w, string(content))
+	} else {
+		mdData := template.HTML(content)
+		// mdData := content
+		util.RenderTpl(staticRoot + "/views/main.tmpl", mdData, w)
+	}
 }
 
 // 路由分发
 func allRoutes(w http.ResponseWriter, r *http.Request) {
 	routePath := r.URL.Path
 	isMd, _ :=regexp.MatchString(mdReg, routePath)
-	fmt.Println(routePath)
 	if routePath == "/" {
 		mdHandler(index, w, r)
 	} else if  isMd {
-		fmt.Println("ismd", routePath)
 		mdHandler(routePath, w, r)
 	} else {
-		static(w, r)
+		staticServer(w, r)
 	}
 }
 
@@ -95,12 +99,16 @@ func isExists(path string) bool {
 	return os.IsExist(err)
 }
 
-func staticServer(prefix string) func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		p := r.URL.Path
-		file := filepath.Join(prefix, p)
-		http.ServeFile(w, r, file)
-		return
+func staticServer(w http.ResponseWriter, r *http.Request) {
+	var staticRou string
+	p := r.URL.Path
+	pathSp := strings.Split(p, "/")
+	if pathSp[1] == "static" {
+		staticRou = filepath.Join(staticRoot, p)
+	} else {
+		staticRou = filepath.Join(docPath, p)
 	}
+	fmt.Println(pathSp[1] == "static",staticRou)
+	http.ServeFile(w, r, staticRou)
 }
 

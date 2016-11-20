@@ -54,7 +54,7 @@ if ($.support.pjax) {
         }, 0);
 
         // 目录切换
-        changeMenu();
+        //changeMenu();
 
         $sug.hide();
     });
@@ -71,7 +71,7 @@ $win.load(function () {
     $docxBd.height($win.height() - $navbarH);
 
     // 目录切换
-    changeMenu();
+    //changeMenu();
 
 });
 

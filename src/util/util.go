@@ -189,5 +189,6 @@ func RenderTpl(path string, data interface{}, w http.ResponseWriter) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	fmt.Println("xxx")
 	t.Execute(w, data)
-}
+}                                         
