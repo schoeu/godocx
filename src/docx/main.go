@@ -1,29 +1,29 @@
 package main
 
 import (
+	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-	"regexp"
-	"util"
 	"path/filepath"
-	"fmt"
+	"regexp"
 	"strings"
-	"html/template"
+	"util"
 )
 
 var (
-	index    = "/readme.md"
-	docPath  = "/Users/memee/Downloads/svn/ps-fe"
-	docxConf = "./docx-conf.json"
-	theme    = "default"
-	port     = "8910"
-	mdReg = ".+.md$"
+	index        = "/readme.md"
+	docPath      = "/Users/memee/Downloads/svn/ps-fe"
+	docxConf     = "./docx-conf.json"
+	theme        = "default"
+	port         = "8910"
+	mdReg        = ".+.md$"
 	staticPrefix = "static"
-	staticRoot = "../../themes/" + theme
+	staticRoot   = "../../themes/" + theme
 )
 
 type PageData struct {
-    mdData  string
+	mdData string
 }
 
 // 入口函数
@@ -39,11 +39,12 @@ func main() {
 }
 
 // 预处理
+
 func initial() {
 
 	// domtree 处理
 	util.ReadDirRs()
-	
+
 	http.HandleFunc("/", allRoutes)
 }
 
@@ -51,7 +52,7 @@ func initial() {
 func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	mdPath := filepath.Join(docPath, mdRelPath)
 	content := util.GetRsHTML(mdPath)
-	
+
 	// pjax branch
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板
@@ -59,17 +60,17 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, string(content))
 	} else {
 		mdData := template.HTML(content)
-		util.RenderTpl(staticRoot + "/views/main.tmpl", mdData, w)
+		util.RenderTpl(staticRoot+"/views/main.tmpl", mdData, w)
 	}
 }
 
 // 路由分发
 func allRoutes(w http.ResponseWriter, r *http.Request) {
 	routePath := r.URL.Path
-	isMd, _ :=regexp.MatchString(mdReg, routePath)
+	isMd, _ := regexp.MatchString(mdReg, routePath)
 	if routePath == "/" {
 		mdHandler(index, w, r)
-	} else if  isMd {
+	} else if isMd {
 		mdHandler(routePath, w, r)
 	} else {
 		staticServer(w, r)
@@ -86,5 +87,6 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 	} else {
 		staticRou = filepath.Join(docPath, p)
 	}
+
 	http.ServeFile(w, r, staticRou)
 }

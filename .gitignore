@@ -25,3 +25,6 @@ _testmain.go
 bin
 pkg
 github.com
+golang.org
+sourcegraph.com
+test.go
