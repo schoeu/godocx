@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 var (
-	docPath    = "/Users/memee/Downloads/svn/ps-fe-new"
+	docPath    = "/Users/memee/Downloads/svn/ps-fe"
 	ignoreDirs = []string{"img", ".git", ".svn", "courseware", "headline", "imgs", "js", "less", "assets"}
 	mdReg = ".+.md$"
 	// /^\s*#+\s?([^#\r\n]+)/
@@ -35,7 +35,8 @@ type fileTrasName  map[string]string
 
 var fileNameMap = fileTrasName{}
 
-func ReadDirRs() {
+func ReadDirRs() []fileCache{
+	// 测试数据
 	fileNameMap = fileTrasName{
 		"aladdin":"阿拉丁",
 		"www":"搜索结果页",
@@ -116,7 +117,9 @@ func ReadDirRs() {
 	// 	return nil
 	// })
 
-	//fmt.Println(docTree, cap(docTree), len(docTree))
+	return docTree
+
+	// fmt.Println(docTree, cap(docTree), len(docTree))
 }
 
 func makeDomTree (crtPath string, ctt *[]fileCache) {
@@ -132,7 +135,7 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 		
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
-			fmt.Println("file",file.Name())
+			//fmt.Println("file",file.Name())
 			fileName := file.Name()
 			//hitted := indexOf(ignoreDirs, fileName)
 			//if hitted > -1 {
@@ -143,17 +146,15 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 				if fileNameMap[fileName] != "" {
 					fc.title = fileNameMap[fileName]
 				} 
-				
+
 				fc.path = fileName
 				fc.ty = "dir"
 				fc.child = &subFileCache
-				// ctt := append(*ctt, fc)
 				*ctt = append(*ctt, fc)
 				
 				makeDomTree(filepath.Join(crtPath, file.Name()), fc.child)
 			//}
 		} else {
-			// title := re.FindString("tablett")
 			fc.path = filepath.Join(docPath, docName)
 			isMd, err := regexp.MatchString(mdReg, fc.path)
 			extName := filepath.Ext(fc.path)
@@ -164,7 +165,6 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 					fc.ty = "file"
 					// markdown转换html
 					ConvMd(content)
-					//_ := append(*ctt, fc)
 					*ctt = append(*ctt, fc)
 				}
 			}
@@ -172,6 +172,49 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 	}
 }
 
+func MakeNav(treeData *[]fileCache) string{
+	htmlStr := ""
+	makeNavHtml(&htmlStr, treeData)
+
+	fmt.Println("htmlStr", htmlStr)
+
+	return htmlStr
+}
+
+/*
+makeNav: function (dirs) {
+        if (Array.isArray(dirs) && dirs.length) {
+            for(var i = 0; i< dirs.length; i++) {
+                var item = dirs[i] || {};
+                if (!item) {
+                    continue;
+                }
+                if (item.type === 'file') {
+                    htmlStr += '<li class="nav nav-title docx-files" data-path="' + item.path + '" data-title="' + item.title + '"><a href="' + item.path + '">' + item.title + '</a></li>';
+                }
+                else if (item.type === 'dir') {
+                    htmlStr += '<li data-dir="' + item.path + '" data-title="' + item.displayName + '" class="docx-dir"><a href="#" class="docx-dirsa">' + item.displayName + '<span class="fa arrow"></span></a><ul class="docx-submenu">';
+                    this.makeNav(item.child);
+                    htmlStr += '</ul></li>';
+                }
+            }
+        }
+    }
+*/
+func makeNavHtml (str *string, data *[]fileCache) {
+	for _, v := range *data {
+		fileType := v.ty
+		if fileType == "file" {
+			*str += "<li class='nav nav-title docx-files' data-path='" + v.path + " data-title='" + v.title + "><a href='" + v.path + "'>" + v.title + "</a></li>"
+		} else if fileType == "dir" {
+			*str += "<li data-dir='" + v.path + "' data-title='" + v.title + "' class='docx-dir'><a href='#' class='docx-dirsa'>" + v.title + "<span class='fa arrow'></span></a><ul class='docx-submenu'>"
+			makeNavHtml(str, v.child)
+			*str += "</ul></li>"
+		}
+	}
+}
+
+// 获取最终html字符串
 func GetRsHTML (path string) []byte{
 	content := GetConent(path)
 	rsHtml := ConvMd(content)

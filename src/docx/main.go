@@ -43,7 +43,8 @@ func main() {
 func initial() {
 
 	// domtree 处理
-	util.ReadDirRs()
+	dirData := util.ReadDirRs()
+	navStr := util.MakeNav(&dirData)
 
 	http.HandleFunc("/", allRoutes)
 }
