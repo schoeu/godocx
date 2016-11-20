@@ -104,6 +104,7 @@ func ReadDirRs() {
 		"pclog":"PC日志",    
 	}
 
+
 	makeDomTree(docPath, &docTree)
 	// sep := string(filepath.Separator)
 	// docPathReg := regexp.MustCompile(docPath)
@@ -115,7 +116,7 @@ func ReadDirRs() {
 	// 	return nil
 	// })
 
-	fmt.Println(docTree, cap(docTree), len(docTree))
+	//fmt.Println(docTree, cap(docTree), len(docTree))
 }
 
 func makeDomTree (crtPath string, ctt *[]fileCache) {
@@ -123,18 +124,26 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	for _, file := range files {
 		fc := fileCache{}
 		isDir := file.IsDir()
 		docName := file.Name()
-		fmt.Println("file",file)
+		
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
+			fmt.Println("file",file.Name())
 			fileName := file.Name()
 			//hitted := indexOf(ignoreDirs, fileName)
 			//if hitted > -1 {
 				subFileCache := make([]fileCache, 0)
-				fc.title = fileNameMap[fileName]
+				
+				// 如果在目录map内有值，则目录名为设定值，没有则默认为文件夹名
+				fc.title = fileName
+				if fileNameMap[fileName] != "" {
+					fc.title = fileNameMap[fileName]
+				} 
+				
 				fc.path = fileName
 				fc.ty = "dir"
 				fc.child = &subFileCache
@@ -144,7 +153,6 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 				makeDomTree(filepath.Join(crtPath, file.Name()), fc.child)
 			//}
 		} else {
-			// fmt.Println("file.Name()", file.Name())
 			// title := re.FindString("tablett")
 			fc.path = filepath.Join(docPath, docName)
 			isMd, err := regexp.MatchString(mdReg, fc.path)
@@ -165,7 +173,6 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 }
 
 func GetRsHTML (path string) []byte{
-	fmt.Println("path",path)
 	content := GetConent(path)
 	rsHtml := ConvMd(content)
 	return rsHtml
@@ -225,7 +232,6 @@ func RenderTpl(path string, data interface{}, w http.ResponseWriter) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println("xxx")
 	t.Execute(w, data)
 }                                         
 
