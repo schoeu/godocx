@@ -33,8 +33,11 @@
                             <ul class="docx-sugul"></ul>
                         </div>
                     </div>
-
                 </form>
+                <ul class="nav menu metismenu docx-navs" id="docx-navs">
+                    {{.NavData}}
+                    <li role="presentation" class="divider"></li>
+                </ul>
             </div>
         </div>
 
@@ -48,7 +51,7 @@
                         <div class="docx-panel docx-panel-default">
                             <div class="markdown-body">
                                 <div class="docx-marked">
-                                    {{.}}
+                                    {{.MdData}}
                                 </div>
                             </div>
                         </div>

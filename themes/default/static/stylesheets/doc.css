@@ -1,9 +1,9 @@
 @font-face {font-family: 'fa';
-    src: url('/icon/fontawesome-webfont.eot'); /* IE9*/
-    src: url('/icon/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-    url('/icon/fontawesome-webfont.woff') format('woff'), /* chrome、firefox */
-    url('/icon/fontawesome-webfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-    url('/icon/fontawesome-webfont.svg#iconfont') format('svg'); /* iOS 4.1- */
+    src: url('/static/icon/fontawesome-webfont.eot'); /* IE9*/
+    src: url('/static/icon/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('/static/icon/fontawesome-webfont.woff') format('woff'), /* chrome、firefox */
+    url('/static/icon/fontawesome-webfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+    url('/static/icon/fontawesome-webfont.svg#iconfont') format('svg'); /* iOS 4.1- */
 }
 .nav-tree {
     width: 25%;

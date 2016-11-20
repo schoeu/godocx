@@ -23,7 +23,9 @@ var (
 )
 
 type PageData struct {
-	mdData string
+	MdData template.HTML
+	SupportInfo string
+	NavData template.HTML
 }
 
 // 入口函数
@@ -38,13 +40,15 @@ func main() {
 	}
 }
 
-// 预处理
+var navStr string
 
+// 预处理
 func initial() {
 
 	// domtree 处理
 	dirData := util.ReadDirRs()
-	navStr := util.MakeNav(&dirData)
+	navStr = util.MakeNav(&dirData)
+	// util.MakeNav(&dirData)
 
 	http.HandleFunc("/", allRoutes)
 }
@@ -60,8 +64,12 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	if isPjax {
 		fmt.Fprintf(w, string(content))
 	} else {
-		mdData := template.HTML(content)
-		util.RenderTpl(staticRoot+"/views/main.tmpl", mdData, w)
+		// mdData := template.HTML(content)
+		pd := PageData{
+			MdData: template.HTML(content),
+			NavData: template.HTML(navStr),
+		}
+		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
 	}
 }
 
