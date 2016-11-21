@@ -1,6 +1,7 @@
 package main
 
 import (
+	"conf"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,7 +10,6 @@ import (
 	"regexp"
 	"strings"
 	"util"
-	"conf"
 )
 
 var (
@@ -22,26 +22,23 @@ var (
 	staticRoot   = "../../themes/" + theme
 
 	// 配置文件变量
-	port         = conf.DocxConf.GetJson("port")
+	port        = conf.DocxConf.GetJson("port")
 	supportInfo = conf.DocxConf.GetJson("supportInfo")
-	title = conf.DocxConf.GetJson("title")
-	headText = conf.DocxConf.GetJson("headText")
-	links = conf.DocxConf.GetJson("extUrls.links")
-	label = conf.DocxConf.GetJson("extUrls.label")
+	title       = conf.DocxConf.GetJson("title")
+	headText    = conf.DocxConf.GetJson("headText")
+	links       = conf.DocxConf.GetJson("extUrls.links")
+	label       = conf.DocxConf.GetJson("extUrls.label")
 )
 
-
-
-
 type PageData struct {
-	MdData template.HTML
-	NavData template.HTML
+	MdData      template.HTML
+	NavData     template.HTML
 	SupportInfo string
-	Title string
-	HeadText string
-	BrandData []string
-	Links []interface{}
-	Label string
+	Title       string
+	HeadText    string
+	BrandData   []string
+	Links       []interface{}
+	Label       string
 }
 
 // 入口函数
@@ -50,7 +47,7 @@ func main() {
 	initial()
 
 	// 监听端口
-	err := http.ListenAndServe(":" + port.(string), nil)
+	err := http.ListenAndServe(":"+port.(string), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -65,7 +62,6 @@ func initial() {
 	dirData := util.ReadDirRs()
 	navStr = util.MakeNav(&dirData)
 	// util.MakeNav(&dirData)
-
 
 	http.HandleFunc("/", allRoutes)
 }
@@ -83,13 +79,13 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	} else {
 		// mdData := template.HTML(content)
 		pd := PageData{
-			MdData: template.HTML(content),
-			NavData: template.HTML(navStr),
+			MdData:      template.HTML(content),
+			NavData:     template.HTML(navStr),
 			SupportInfo: supportInfo.(string),
-			Title: title.(string),
-			HeadText: headText.(string),
-			Links: links.([]interface{}),
-			Label: label.(string),
+			Title:       title.(string),
+			HeadText:    headText.(string),
+			Links:       links.([]interface{}),
+			Label:       label.(string),
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
 	}

@@ -1,8 +1,8 @@
 package conf
 
-import(
-	"io/ioutil"
+import (
 	"github.com/tidwall/gjson"
+	"io/ioutil"
 )
 
 var (
@@ -10,14 +10,14 @@ var (
 )
 
 type Config struct {
-	path string
+	path    string
 	content string
 }
 
 var DocxConf = &Config{path: configPath}
 
 // 获取配置文件
-func (c *Config)getConf(){
+func (c *Config) getConf() {
 	if c.content == "" {
 		config, err := ioutil.ReadFile(c.path)
 		if err == nil {
@@ -27,7 +27,7 @@ func (c *Config)getConf(){
 }
 
 // 获取参数配置
-func (c *Config)GetJson(param string) interface{}{
+func (c *Config) GetJson(param string) interface{} {
 	c.getConf()
 	return gjson.Get(c.content, param).Value()
 }
