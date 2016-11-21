@@ -9,7 +9,6 @@ import (
 	"os"
 	//"strings"
 	"github.com/russross/blackfriday"
-	"github.com/tidwall/gjson"
 	"html/template"
 	"net/http"
 )
@@ -17,7 +16,6 @@ var (
 	docPath    = "/Users/memee/Downloads/svn/ps-fe"
 	ignoreDirs = []string{"img", ".git", ".svn", "courseware", "headline", "imgs", "js", "less", "assets"}
 	mdReg = ".+.md$"
-	configPath = "../../docx-conf.json"
 	// /^\s*#+\s?([^#\r\n]+)/
 	titleReg = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
 	// /<title>(.+?)<\/title>/
@@ -30,16 +28,6 @@ type fileCache struct {
 	ty string
 	child *[]fileCache
 }
-
-
-type Config struct {
-	path string
-	content string
-}
-
-var docxConf = &Config{path: configPath}
-
-var configMap = map[string]string{}
 
 var docTree = make([]fileCache,0)
 
@@ -119,6 +107,7 @@ func ReadDirRs() []fileCache{
 
 
 	makeDomTree(docPath, &docTree)
+	fmt.Println("------------->", docxConf.GetJson("port"))
 	return docTree
 
 	// fmt.Println(docTree, cap(docTree), len(docTree))
@@ -177,7 +166,6 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 func MakeNav(treeData *[]fileCache) string{
 	htmlStr := ""
 	makeNavHtml(&htmlStr, treeData)
-	fmt.Println("htmlStr", htmlStr)
 	return htmlStr
 }
 
@@ -276,20 +264,4 @@ func indexOf(s []string, oriVal string) bool{
 		}
 	}
 	return false
-}
-
-// 获取配置文件
-func (c *Config)getConf(){
-	if c.content == "" {
-		config, err := ioutil.ReadFile(c.path)
-		if err != nil {
-			c.content = string(config)
-		}
-	}
-}
-
-// 获取参数配置
-func (c *Config)GetJson(param string) interface{}{
-	c.getConf()
-	return gjson.Get(c.content, param)
 }

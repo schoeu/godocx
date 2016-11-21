@@ -1,65 +1,33 @@
 package conf
 
-import (
-	"fmt"
+import(
 	"io/ioutil"
-	"path/filepath"
-	"gopkg.in/yaml.v2"
+	"github.com/tidwall/gjson"
+)
+
+var (
+	configPath = "../../docx-conf.json"
 )
 
 type Config struct {
-	Site     siteConfig   `yaml:"site"`
-	Server   serverConfig `yaml:"server"`
-	ConfPath string
+	path string
+	content string
 }
 
-type serverConfig struct {
-	port int    `yaml:port`
-	path string `yaml:path`
-}
+var DocxConf = &Config{path: configPath}
 
-type siteConfig struct {
-	headText    string       `yaml:"headText"`
-	title       string       `yaml:"title"`
-	logPath     int          `yaml:"logPath"`
-	//ignoreDir   []string     `yaml:"ignoreDir"`
-	supportInfo string       `yaml:"supportInfo"`
-	//extUrls     extUrlStruct `yaml:"extUrls"`
-}
-
-type extUrlStruct struct {
-	links linksStruct `yaml:"links"`
-	label string      `yaml:"label"`
-}
-
-type linksStruct struct {
-	name string `yaml:"name"`
-	url  string `yaml:"url"`
-}
-
-func (c *Config) parseConfig() error {
-	data, err := ioutil.ReadFile(filepath.Join(c.ConfPath, "conf.yml"))
-	if err != nil {
-		return fmt.Errorf("config err: %v", err)
+// 获取配置文件
+func (c *Config)getConf(){
+	if c.content == "" {
+		config, err := ioutil.ReadFile(c.path)
+		if err == nil {
+			c.content = string(config)
+		}
 	}
-
-	fmt.Println(yaml.Unmarshal(data, &c))
-
-	if err = yaml.Unmarshal(data, &c); err != nil {
-		return fmt.Errorf("Unmarshal config: %v", err)
-	}
-
-	return nil
 }
 
-func GetConf() (*Config, error) {
-	var config = &Config{
-		ConfPath: ".",
-	}
-
-	err := config.parseConfig()
-	if err != nil {
-		return nil, fmt.Errorf("parse config: %v", err)
-	}
-	return config, nil
+// 获取参数配置
+func (c *Config)GetJson(param string) interface{}{
+	c.getConf()
+	return gjson.Get(c.content, param)
 }

@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"util"
+	"conf"
 )
 
 var (
@@ -16,7 +17,7 @@ var (
 	docPath      = "/Users/memee/Downloads/svn/ps-fe"
 	docxConf     = "./docx-conf.json"
 	theme        = "default"
-	port         = "8910"
+	port         = DocxConf.GetJson("port")
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
 	staticRoot   = "../../themes/" + theme
