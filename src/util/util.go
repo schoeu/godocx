@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"os"
-	//"strings"
 	"github.com/russross/blackfriday"
 	"html/template"
 	"net/http"
@@ -108,13 +107,13 @@ func ReadDirRs() []fileCache{
 		"pclog":"PC日志",    
 	}
 
-
 	makeDomTree(docPath, &docTree)
 	return docTree
 
 	// fmt.Println(docTree, cap(docTree), len(docTree))
 }
 
+// 遍历文件生成文档层级树
 func makeDomTree (crtPath string, ctt *[]fileCache) {
 	files, err := ioutil.ReadDir(crtPath)
 	if err != nil {
@@ -128,7 +127,6 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 		
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
-			//fmt.Println("file",file.Name())
 			fileName := file.Name()
 			hitted := indexOf(ignoreDir, fileName)
 			if !hitted {
