@@ -29,5 +29,5 @@ func (c *Config)getConf(){
 // 获取参数配置
 func (c *Config)GetJson(param string) interface{}{
 	c.getConf()
-	return gjson.Get(c.content, param)
+	return gjson.Get(c.content, param).Value()
 }

@@ -1,7 +1,6 @@
 package util
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"path/filepath"
@@ -107,7 +106,6 @@ func ReadDirRs() []fileCache{
 
 
 	makeDomTree(docPath, &docTree)
-	fmt.Println("------------->", docxConf.GetJson("port"))
 	return docTree
 
 	// fmt.Println(docTree, cap(docTree), len(docTree))

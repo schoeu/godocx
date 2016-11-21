@@ -2,6 +2,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}}</title>
     <link type="text/css" rel="stylesheet" href="/static/stylesheets/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="/static/stylesheets/md.css"/>
     <link type="text/css" rel="stylesheet" href="/static/stylesheets/metisMenu.min.css"/>
@@ -20,6 +21,19 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
+                    <a class="navbar-brand" href="/">{{.HeadText}}</a>
+                    <ul class="user-menu">
+                        <li class="dropdown pull-right">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{.Label}}<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                {{range .Links}}
+                                    <li>
+                                        <a href="{{.url}}">{{.name}}</a>
+                                    </li>
+                                {{end}}
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </nav>
@@ -37,6 +51,9 @@
                 <ul class="nav menu metismenu docx-navs" id="docx-navs">
                     {{.NavData}}
                     <li role="presentation" class="divider"></li>
+                    {{if .SupportInfo}}
+                        <li><a href="{{.SupportInfo}}"> 支持 </a></li>
+                    {{end}}
                 </ul>
             </div>
         </div>
@@ -44,6 +61,12 @@
         <div class="col-sm-9 col-sm-offset-3 col-lg-9 col-lg-offset-3 main docx-marked-wrap container-fluid">
             <div>
                 <div class="row">
+                    <ol class="breadcrumb">
+                        <li>{{.HeadText}}</li>
+                        {{range .BrandData}}
+                        <li class="active">{{.}}</li>
+                        {{end}}
+                    </ol>
                 </div>
 
                 <div class="row">

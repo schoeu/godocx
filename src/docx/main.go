@@ -17,16 +17,29 @@ var (
 	docPath      = "/Users/memee/Downloads/svn/ps-fe"
 	docxConf     = "./docx-conf.json"
 	theme        = "default"
-	port         = DocxConf.GetJson("port")
+	port         = conf.DocxConf.GetJson("port")
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
 	staticRoot   = "../../themes/" + theme
+	supportInfo = conf.DocxConf.GetJson("supportInfo")
+	title = conf.DocxConf.GetJson("title")
+	headText = conf.DocxConf.GetJson("headText")
+	links = conf.DocxConf.GetJson("extUrls.links")
+	label = conf.DocxConf.GetJson("extUrls.label")
 )
+
+
+
 
 type PageData struct {
 	MdData template.HTML
-	SupportInfo string
 	NavData template.HTML
+	SupportInfo string
+	Title string
+	HeadText string
+	BrandData []string
+	Links []interface{}
+	Label string
 }
 
 // 入口函数
@@ -35,7 +48,7 @@ func main() {
 	initial()
 
 	// 监听端口
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(":8910", nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -70,6 +83,11 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 		pd := PageData{
 			MdData: template.HTML(content),
 			NavData: template.HTML(navStr),
+			SupportInfo: supportInfo.(string),
+			Title: title.(string),
+			HeadText: headText.(string),
+			Links: links.([]interface{}),
+			Label: label.(string),
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
 	}
