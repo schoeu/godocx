@@ -50,6 +50,7 @@ func initial() {
 	navStr = util.MakeNav(&dirData)
 	// util.MakeNav(&dirData)
 
+
 	http.HandleFunc("/", allRoutes)
 }
 
