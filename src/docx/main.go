@@ -17,10 +17,12 @@ var (
 	docPath      = "/Users/memee/Downloads/svn/ps-fe"
 	docxConf     = "./docx-conf.json"
 	theme        = "default"
-	port         = conf.DocxConf.GetJson("port")
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
 	staticRoot   = "../../themes/" + theme
+
+	// 配置文件变量
+	port         = conf.DocxConf.GetJson("port")
 	supportInfo = conf.DocxConf.GetJson("supportInfo")
 	title = conf.DocxConf.GetJson("title")
 	headText = conf.DocxConf.GetJson("headText")
@@ -48,7 +50,7 @@ func main() {
 	initial()
 
 	// 监听端口
-	err := http.ListenAndServe(":8910", nil)
+	err := http.ListenAndServe(":" + port.(string), nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}

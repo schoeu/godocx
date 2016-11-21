@@ -10,15 +10,19 @@ import (
 	"github.com/russross/blackfriday"
 	"html/template"
 	"net/http"
+
+	"conf"
 )
 var (
 	docPath    = "/Users/memee/Downloads/svn/ps-fe"
-	ignoreDirs = []string{"img", ".git", ".svn", "courseware", "headline", "imgs", "js", "less", "assets"}
 	mdReg = ".+.md$"
 	// /^\s*#+\s?([^#\r\n]+)/
 	titleReg = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
 	// /<title>(.+?)<\/title>/
 	htmlTitleReg = regexp.MustCompile("<title>(.+?)<\\/title>")
+
+	// 配置文件变量
+	ignoreDir         = conf.DocxConf.GetJson("ignoreDir").([]interface{})
 )
 
 type fileCache struct {
@@ -126,7 +130,7 @@ func makeDomTree (crtPath string, ctt *[]fileCache) {
 		if isDir {
 			//fmt.Println("file",file.Name())
 			fileName := file.Name()
-			hitted := indexOf(ignoreDirs, fileName)
+			hitted := indexOf(ignoreDir, fileName)
 			if !hitted {
 				subFileCache := make([]fileCache, 0)
 				
@@ -255,7 +259,7 @@ func isExists(path string) bool {
 }
 
 // []string indexOf
-func indexOf(s []string, oriVal string) bool{
+func indexOf(s []interface{}, oriVal string) bool{
 	for _, val := range s {
 		if val == oriVal {
 			return true
