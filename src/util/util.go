@@ -203,18 +203,17 @@ func ConvMd(content []byte) []byte {
 
 // 获取标题
 func GetTitle(extName string, content []byte) string {
-	contentStr := string(content)
+	var titleCt [][]string
 	var title string
+	contentStr := string(content)
 	if extName == ".md" {
-		titleCt := titleReg.FindAllStringSubmatch(contentStr, -1)
-		for _, v := range titleCt {
-			title = v[1]
-			break
-		}
-		// title = titleCt
+		titleCt = titleReg.FindAllStringSubmatch(contentStr, -1)
 	} else if extName == ".html" || extName == ".htm" {
-		// htmlTitleCt := titleReg.FindAllStringSubmatch(contentStr, -1)
-		// title = htmlTitleCt
+		titleCt = titleReg.FindAllStringSubmatch(contentStr, -1)
+	}
+	for _, v := range titleCt {
+		title = v[1]
+		break
 	}
 	return title
 }
@@ -250,6 +249,7 @@ func PathExists(path string) (bool, error) {
 // 渲染模板
 func RenderTpl(path string, data interface{}, w http.ResponseWriter) {
 	t, err := template.ParseFiles(path)
+	
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -274,4 +274,15 @@ func indexOf(s []interface{}, oriVal string) bool {
 		}
 	}
 	return false
+}
+
+// 获取面包屑数据
+func GetPjaxContent(path string) []string {
+	pathCtt := strings.Split(path, "/")
+	paths := []string{}
+
+	for _, v := range pathCtt {
+		paths = append(paths, fileNameMap[v])
+	}
+	return paths
 }

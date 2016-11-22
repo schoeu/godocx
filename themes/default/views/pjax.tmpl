@@ -1,6 +1,9 @@
 <div class="row">
      <ol class="breadcrumb">
-        <li></li>
+        <li>{{.HeadText}}</li>
+        {{range .BrandData}}
+            <li class="active">{{.}}</li>
+        {{end}}
     </ol>
 </div>
 <div class="row">
@@ -8,6 +11,7 @@
         <div class="docx-panel docx-panel-default">
             <div class="markdown-body">
                 <div class="docx-marked">
+                    {{.MdData}}
                 </div>
             </div>
         </div>

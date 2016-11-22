@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"util"
-	"io"
+	//"io"
 )
 
 var (
@@ -34,10 +34,10 @@ var (
 type PageData struct {
 	MdData      template.HTML
 	NavData     template.HTML
+	BrandData   []string 
 	SupportInfo string
 	Title       string
 	HeadText    string
-	BrandData   []string
 	Links       []interface{}
 	Label       string
 }
@@ -71,12 +71,20 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	mdPath := filepath.Join(docPath, mdRelPath)
 	content := util.GetRsHTML(mdPath)
 
+	brandArr := util.GetPjaxContent(mdRelPath)
+
 	// pjax branch
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板
 	if isPjax {
 		//fmt.Fprintf(w, string(content))
-		io.WriteString(w, string(content))
+		brandPd := PageData{
+			MdData:      template.HTML(content),
+			BrandData:   brandArr,
+			HeadText:    headText.(string),
+		}
+		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
+		//io.WriteString(w, string(content))
 	} else {
 		// mdData := template.HTML(content)
 		pd := PageData{
@@ -87,8 +95,10 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			HeadText:    headText.(string),
 			Links:       links.([]interface{}),
 			Label:       label.(string),
+			BrandData:   brandArr,
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
+		
 	}
 }
 
