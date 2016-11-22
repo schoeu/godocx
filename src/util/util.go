@@ -10,10 +10,8 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	//"sort"
 
 	"conf"
-	"fmt"
 )
 
 var (
@@ -53,7 +51,6 @@ func ReadDirRs() []fileCache {
 	// 依配置文件循序排序
 	var sortedDocTree = dirSort()
 
-	fmt.Println(sortedDocTree, len(sortedDocTree))
 	return sortedDocTree
 }
 

@@ -74,7 +74,6 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板
 	if isPjax {
-		//fmt.Fprintf(w, string(content))
 		brandPd := PageData{
 			MdData:    template.HTML(content),
 			BrandData: brandArr,
