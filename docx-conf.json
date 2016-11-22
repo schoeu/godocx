@@ -18,5 +18,273 @@
       "name": "SUPERFRAME文档",
       "url": "http://superframe.baidu.com"
     }]
-  }
+  },
+  "docName": [{
+      "name": "aladdin",
+      "trans": "阿拉丁"
+    },
+    {
+      "name": "www",
+      "trans": "搜索结果页"
+    },
+    {
+      "name": "standards",
+      "trans": "规范流程"
+    },
+    {
+      "name": "superframe",
+      "trans": "superframe"
+    },
+    {
+      "name": "log",
+      "trans": "日志"
+    },
+    {
+      "name": "transcode",
+      "trans": "无线转码"
+    },
+    {
+      "name": "realtime",
+      "trans": "时效性"
+    },
+    {
+      "name": "performance",
+      "trans": "性能优化"
+    },
+    {
+      "name": "references",
+      "trans": "资源引入"
+    },
+    {
+      "name": "data",
+      "trans": "数据接口"
+    },
+    {
+      "name": "tools",
+      "trans": "工具服务"
+    },
+    {
+      "name": "xueshu",
+      "trans": "学术"
+    },
+    {
+      "name": "advertise",
+      "trans": "广告"
+    },
+    {
+      "name": "rules",
+      "trans": "规范"
+    },
+    {
+      "name": "santa",
+      "trans": "圣玛利亚"
+    },
+    {
+      "name": "cardspeedup",
+      "trans": "模板性能优化"
+    },
+    {
+      "name": "commonupdate",
+      "trans": "通用升级"
+    },
+    {
+      "name": "develop",
+      "trans": "圣玛利亚"
+    },
+    {
+      "name": "jscommmon",
+      "trans": "js组件"
+    },
+    {
+      "name": "platform",
+      "trans": "平台指南"
+    },
+    {
+      "name": "publish",
+      "trans": "上线"
+    },
+    {
+      "name": "standard",
+      "trans": "开发规范"
+    },
+    {
+      "name": "technicalarea",
+      "trans": "技术专区"
+    },
+    {
+      "name": "tongji",
+      "trans": "日志"
+    },
+    {
+      "name": "wise",
+      "trans": "无线网页搜索"
+    },
+    {
+      "name": "devdocs",
+      "trans": "开发指导"
+    },
+    {
+      "name": "static",
+      "trans": "静态文件"
+    },
+    {
+      "name": "pc",
+      "trans": "PC网页搜索"
+    },
+    {
+      "name": "midpage",
+      "trans": "搜索中间页"
+    },
+    {
+      "name": "show",
+      "trans": "展现日志"
+    },
+    {
+      "name": "click",
+      "trans": "点击日志"
+    },
+    {
+      "name": "client",
+      "trans": "客户端相关规范"
+    },
+    {
+      "name": "process",
+      "trans": "使用和变更流程"
+    },
+    {
+      "name": "action",
+      "trans": "异步日志"
+    },
+    {
+      "name": "framework",
+      "trans": "架构"
+    },
+    {
+      "name": "aladdin-debug",
+      "trans": "阿拉丁常见调试"
+    },
+    {
+      "name": "research",
+      "trans": "技术调研"
+    },
+    {
+      "name": "courseware",
+      "trans": "串讲文档"
+    },
+    {
+      "name": "grid",
+      "trans": "栅格化"
+    },
+    {
+      "name": "process",
+      "trans": "流程"
+    },
+    {
+      "name": "develop",
+      "trans": "开发相关"
+    },
+    {
+      "name": "general-dev",
+      "trans": "通用开发相关"
+    },
+    {
+      "name": "frontend-dev",
+      "trans": "前端开发相关"
+    },
+    {
+      "name": "environment-dev",
+      "trans": "环境相关"
+    },
+    {
+      "name": "union",
+      "trans": "联盟相关"
+    },
+    {
+      "name": "front-interface",
+      "trans": "前后端接口"
+    },
+    {
+      "name": "refactor",
+      "trans": "重构"
+    },
+    {
+      "name": "test",
+      "trans": "测试相关"
+    },
+    {
+      "name": "async",
+      "trans": "异步化"
+    },
+    {
+      "name": "spec",
+      "trans": "规范"
+    },
+    {
+      "name": "component",
+      "trans": "功能组件"
+    },
+    {
+      "name": "sample",
+      "trans": "抽样相关"
+    },
+    {
+      "name": "schema",
+      "trans": "Schemas标记"
+    },
+    {
+      "name": "aladdin-test",
+      "trans": "阿拉丁（测试）"
+    },
+    {
+      "name": "tpldev",
+      "trans": "开发平台"
+    },
+    {
+      "name": "wireless-dev",
+      "trans": "无线开发"
+    },
+    {
+      "name": "new-reading",
+      "trans": "新人必读"
+    },
+    {
+      "name": "pc-doc",
+      "trans": "PC开发文档"
+    },
+    {
+      "name": "team",
+      "trans": "团队介绍"
+    },
+    {
+      "name": "pc-other",
+      "trans": "PC其他开发文档"
+    },
+    {
+      "name": "0-send-guide",
+      "trans": "发送指南"
+    },
+    {
+      "name": "1-stat-guide",
+      "trans": "统计指南"
+    },
+    {
+      "name": "todolist",
+      "trans": "备忘列表"
+    },
+    {
+      "name": "pcspans",
+      "trans": "PCspans"
+    },
+    {
+      "name": "pcuijs",
+      "trans": "PC-js组件"
+    },
+    {
+      "name": "paduijs",
+      "trans": "PAD组件"
+    },
+    {
+      "name": "pclog",
+      "trans": "PC日志"
+    }]
 }

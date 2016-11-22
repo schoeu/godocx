@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"conf"
-	// "fmt"
 )
 
 var (
@@ -25,6 +24,8 @@ var (
 
 	// 配置文件变量
 	ignoreDir = conf.DocxConf.GetJson("ignoreDir").([]interface{})
+	// docNames = conf.DocxConf.GetJson("docName").([]map[string]string)
+	docNames = conf.DocxConf.GetJson("docName").([]interface{})
 )
 
 type fileCache struct {
@@ -41,79 +42,9 @@ type fileTrasName map[string]string
 var fileNameMap = fileTrasName{}
 
 func ReadDirRs() []fileCache {
-	// 测试数据
-	fileNameMap = fileTrasName{
-		"aladdin":         "阿拉丁",
-		"www":             "搜索结果页",
-		"standards":       "规范流程",
-		"superframe":      "superframe",
-		"log":             "日志",
-		"transcode":       "无线转码",
-		"realtime":        "时效性",
-		"performance":     "性能优化",
-		"references":      "资源引入",
-		"data":            "数据接口",
-		"tools":           "工具服务",
-		"xueshu":          "学术",
-		"advertise":       "广告",
-		"rules":           "规范",
-		"santa":           "圣玛利亚",
-		"cardspeedup":     "模板性能优化",
-		"commonupdate":    "通用升级",
-		"develop":         "圣玛利亚",
-		"jscommmon":       "js组件",
-		"platform":        "平台指南",
-		"publish":         "上线",
-		"standard":        "开发规范",
-		"technicalarea":   "技术专区",
-		"tongji":          "日志",
-		"wise":            "无线网页搜索",
-		"devdocs":         "开发指导",
-		"static":          "静态文件",
-		"pc":              "PC网页搜索",
-		"midpage":         "搜索中间页",
-		"show":            "展现日志",
-		"click":           "点击日志",
-		"client":          "客户端相关规范",
-		"process":         "使用和变更流程",
-		"action":          "异步日志",
-		"framework":       "架构",
-		"aladdin-debug":   "阿拉丁常见调试",
-		"research":        "技术调研",
-		"courseware":      "串讲文档",
-		"grid":            "栅格化",
-		"general-dev":     "通用开发相关",
-		"frontend-dev":    "前端开发相关",
-		"environment-dev": "环境相关",
-		"union":           "联盟相关",
-		"front-interface": "前后端接口",
-		"refactor":        "重构",
-		"test":            "测试相关",
-		"async":           "异步化",
-		"spec":            "规范",
-		"component":       "功能组件",
-		"sample":          "抽样相关",
-		"schema":          "Schemas标记",
-		"aladdin-test":    "阿拉丁（测试）",
-		"tpldev":          "开发平台",
-		"wireless-dev":    "无线开发",
-		"new-reading":     "新人必读",
-		"pc-doc":          "PC开发文档",
-		"team":            "团队介绍",
-		"pc-other":        "PC其他开发文档",
-		"0-send-guide":    "发送指南",
-		"1-stat-guide":    "统计指南",
-		"todolist":        "备忘列表",
-		"pcspans":         "PCspans",
-		"pcuijs":          "PC-js组件",
-		"paduijs":         "PAD组件",
-		"pclog":           "PC日志",
-	}
-
+	fileNameMap = getDocNames(docNames)
 	makeDomTree(docPath, &docTree)
 	return docTree
-
-	// fmt.Println(docTree, cap(docTree), len(docTree))
 }
 
 // 遍历文件生成文档层级树
@@ -274,6 +205,18 @@ func indexOf(s []interface{}, oriVal string) bool {
 		}
 	}
 	return false
+}
+
+// 转换文件名配置为map
+func getDocNames(docs []interface{}) map[string]string {
+	tempTrasName := map[string]string{}
+	for _, v := range docs {
+		t := v.(map[string]interface{})
+		k := t["name"].(string)
+		val := t["trans"].(string)
+		tempTrasName[k] = val
+	}
+	return tempTrasName
 }
 
 // 获取面包屑数据
