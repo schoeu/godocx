@@ -11,6 +11,7 @@ import (
 	"strings"
 	"util"
 	//"io"
+	"fmt"
 )
 
 var (
@@ -72,7 +73,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	content := util.GetRsHTML(mdPath)
 
 	brandArr := util.GetPjaxContent(mdRelPath)
-
+	fmt.Println(brandArr)
 	// pjax branch
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板

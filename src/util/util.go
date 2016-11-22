@@ -227,5 +227,5 @@ func GetPjaxContent(path string) []string {
 	for _, v := range pathCtt {
 		paths = append(paths, fileNameMap[v])
 	}
-	return paths
+	return paths[1:]
 }
