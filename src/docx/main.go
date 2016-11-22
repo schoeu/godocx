@@ -2,7 +2,6 @@ package main
 
 import (
 	"conf"
-	//"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,14 +9,11 @@ import (
 	"regexp"
 	"strings"
 	"util"
-	//"io"
-	"fmt"
 )
 
 var (
 	index        = "/readme.md"
 	docPath      = "/Users/memee/Downloads/svn/ps-fe"
-	docxConf     = "./docx-conf.json"
 	theme        = "default"
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
@@ -35,7 +31,7 @@ var (
 type PageData struct {
 	MdData      template.HTML
 	NavData     template.HTML
-	BrandData   []string 
+	BrandData   []string
 	SupportInfo string
 	Title       string
 	HeadText    string
@@ -73,21 +69,19 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	content := util.GetRsHTML(mdPath)
 
 	brandArr := util.GetPjaxContent(mdRelPath)
-	fmt.Println(brandArr)
+
 	// pjax branch
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板
 	if isPjax {
 		//fmt.Fprintf(w, string(content))
 		brandPd := PageData{
-			MdData:      template.HTML(content),
-			BrandData:   brandArr,
-			HeadText:    headText.(string),
+			MdData:    template.HTML(content),
+			BrandData: brandArr,
+			HeadText:  headText.(string),
 		}
 		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
-		//io.WriteString(w, string(content))
 	} else {
-		// mdData := template.HTML(content)
 		pd := PageData{
 			MdData:      template.HTML(content),
 			NavData:     template.HTML(navStr),
@@ -99,7 +93,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			BrandData:   brandArr,
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
-		
+
 	}
 }
 
