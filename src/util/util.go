@@ -17,14 +17,11 @@ import (
 var (
 	docPath = "/Users/memee/Downloads/svn/ps-fe"
 	mdReg   = ".+.md$"
-	// /^\s*#+\s?([^#\r\n]+)/
 	titleReg = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
-	// /<title>(.+?)<\/title>/
 	htmlTitleReg = regexp.MustCompile("<title>(.+?)<\\/title>")
 
 	// 配置文件变量
 	ignoreDir = conf.DocxConf.GetJson("ignoreDir").([]interface{})
-	// docNames = conf.DocxConf.GetJson("docName").([]map[string]string)
 	docNames = conf.DocxConf.GetJson("docName").([]interface{})
 )
 
