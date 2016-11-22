@@ -15,14 +15,14 @@ import (
 )
 
 var (
-	docPath = "/Users/memee/Downloads/svn/ps-fe"
-	mdReg   = ".+.md$"
-	titleReg = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
+	docPath      = "/Users/memee/Downloads/svn/ps-fe"
+	mdReg        = ".+.md$"
+	titleReg     = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
 	htmlTitleReg = regexp.MustCompile("<title>(.+?)<\\/title>")
 
 	// 配置文件变量
 	ignoreDir = conf.DocxConf.GetJson("ignoreDir").([]interface{})
-	docNames = conf.DocxConf.GetJson("docName").([]interface{})
+	docNames  = conf.DocxConf.GetJson("docName").([]interface{})
 )
 
 type fileCache struct {
@@ -52,7 +52,7 @@ func ReadDirRs() []fileCache {
 }
 
 // 排序
-func dirSort() []fileCache{
+func dirSort() []fileCache {
 	var tempDirSlice = []fileCache{}
 	var tempFileSlice = []fileCache{}
 	var rsDirSlice = []fileCache{}
@@ -86,10 +86,9 @@ func makeDomTree(crtPath string, ctt *[]fileCache) {
 	for _, file := range files {
 		fc := fileCache{}
 		isDir := file.IsDir()
-		docName := file.Name()
+		fileName := file.Name()
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
-			fileName := file.Name()
 			hitted := indexOf(ignoreDir, fileName)
 			if !hitted {
 				subFileCache := make([]fileCache, 0)
@@ -108,9 +107,9 @@ func makeDomTree(crtPath string, ctt *[]fileCache) {
 				makeDomTree(filepath.Join(crtPath, file.Name()), fc.child)
 			}
 		} else {
-			relFile := filepath.Join(crtPath, docName)
+			relFile := filepath.Join(crtPath, fileName)
 			relPath := strings.Replace(crtPath, docPath, "", -1)
-			fc.path = filepath.Join(relPath, docName)
+			fc.path = filepath.Join("/", relPath, fileName)
 			isMd, err := regexp.MatchString(mdReg, fc.path)
 			extName := filepath.Ext(fc.path)
 			if err == nil {
@@ -246,7 +245,7 @@ func getDocNames(docs []interface{}) map[string]string {
 		tempTrasName[k] = val
 		dirOrder = append(dirOrder, k)
 	}
-	
+
 	return tempTrasName
 }
 
