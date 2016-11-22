@@ -10,8 +10,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	//"sort"
 
 	"conf"
+	"fmt"
 )
 
 var (
@@ -37,14 +39,47 @@ type fileCache struct {
 
 var docTree = make([]fileCache, 0)
 
-type fileTrasName map[string]string
+// 文件夹排序用
+var dirOrder = []string{}
 
-var fileNameMap = fileTrasName{}
+var fileNameMap = map[string]string{}
 
 func ReadDirRs() []fileCache {
 	fileNameMap = getDocNames(docNames)
+
+	// 生成树结构
 	makeDomTree(docPath, &docTree)
-	return docTree
+
+	// 依配置文件循序排序
+	var sortedDocTree = dirSort()
+
+	fmt.Println(sortedDocTree, len(sortedDocTree))
+	return sortedDocTree
+}
+
+// 排序
+func dirSort() []fileCache{
+	var tempDirSlice = []fileCache{}
+	var tempFileSlice = []fileCache{}
+	var rsDirSlice = []fileCache{}
+	for _, v := range docTree {
+		ty := v.ty
+		if ty == "file" {
+			tempFileSlice = append(tempFileSlice, v)
+		} else if ty == "dir" {
+			tempDirSlice = append(tempDirSlice, v)
+		}
+	}
+
+	for _, it := range dirOrder {
+		for _, v := range docTree {
+			if v.path == it {
+				rsDirSlice = append(rsDirSlice, v)
+			}
+		}
+	}
+
+	return append(tempFileSlice, rsDirSlice...)
 }
 
 // 遍历文件生成文档层级树
@@ -215,7 +250,9 @@ func getDocNames(docs []interface{}) map[string]string {
 		k := t["name"].(string)
 		val := t["trans"].(string)
 		tempTrasName[k] = val
+		dirOrder = append(dirOrder, k)
 	}
+	
 	return tempTrasName
 }
 
