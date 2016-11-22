@@ -9,8 +9,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"conf"
+	// "fmt"
 )
 
 var (
@@ -125,7 +127,6 @@ func makeDomTree(crtPath string, ctt *[]fileCache) {
 		fc := fileCache{}
 		isDir := file.IsDir()
 		docName := file.Name()
-
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
 			fileName := file.Name()
@@ -147,12 +148,14 @@ func makeDomTree(crtPath string, ctt *[]fileCache) {
 				makeDomTree(filepath.Join(crtPath, file.Name()), fc.child)
 			}
 		} else {
-			fc.path = docName
+			relFile := filepath.Join(crtPath, docName)
+			relPath := strings.Replace(crtPath, docPath, "", -1)
+			fc.path = filepath.Join(relPath, docName)
 			isMd, err := regexp.MatchString(mdReg, fc.path)
 			extName := filepath.Ext(fc.path)
 			if err == nil {
 				if isMd || extName == ".html" || extName == ".htm" {
-					content := GetConent(fc.path)
+					content := GetConent(relFile)
 					fc.title = GetTitle(extName, content)
 					fc.ty = "file"
 					// markdown转换html
@@ -203,9 +206,15 @@ func GetTitle(extName string, content []byte) string {
 	contentStr := string(content)
 	var title string
 	if extName == ".md" {
-		title = titleReg.FindString(contentStr)
+		titleCt := titleReg.FindAllStringSubmatch(contentStr, -1)
+		for _, v := range titleCt {
+			title = v[1]
+			break
+		}
+		// title = titleCt
 	} else if extName == ".html" || extName == ".htm" {
-		title = htmlTitleReg.FindString(contentStr)
+		// htmlTitleCt := titleReg.FindAllStringSubmatch(contentStr, -1)
+		// title = htmlTitleCt
 	}
 	return title
 }
@@ -257,7 +266,7 @@ func isExists(path string) bool {
 	return os.IsExist(err)
 }
 
-// []string indexOf
+// []interface{} indexOf
 func indexOf(s []interface{}, oriVal string) bool {
 	for _, val := range s {
 		if val == oriVal {

@@ -2,7 +2,7 @@ package main
 
 import (
 	"conf"
-	"fmt"
+	//"fmt"
 	"html/template"
 	"log"
 	"net/http"
@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"util"
+	"io"
 )
 
 var (
@@ -61,7 +62,6 @@ func initial() {
 	// domtree 处理
 	dirData := util.ReadDirRs()
 	navStr = util.MakeNav(&dirData)
-	// util.MakeNav(&dirData)
 
 	http.HandleFunc("/", allRoutes)
 }
@@ -75,7 +75,8 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 	isPjax := r.Header.Get("x-pjax") == "true"
 	// 如果是pajx请求则返回片段，其他返回整模板
 	if isPjax {
-		fmt.Fprintf(w, string(content))
+		//fmt.Fprintf(w, string(content))
+		io.WriteString(w, string(content))
 	} else {
 		// mdData := template.HTML(content)
 		pd := PageData{
