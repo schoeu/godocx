@@ -103,25 +103,31 @@ function changeMenu() {
  * */
 $searchIpt.on('input', function (e) {
     var key =$searchIpt.val();
-    key ? $sug.show() : $sug.hide();
-    $.ajax({
-        url: '/api/search',
-        data: {
-            name: key,
-            type: 'title'
-        },
-        type: 'post'
-    }).done(function (data) {
-        var rsData = data.data;
-        var htmlStr = '';
-        if (Array.isArray(rsData) && rsData.length) {
-            rsData.slice(0, 10).forEach(function (it) {
-                htmlStr +=  '<li><a href="'+ it.path +'">'+ it.title +'</a></li>';
-            });
-        }
-        htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
-        $sugul.html(htmlStr);
-    });
+    if (key) {
+        $sug.show();
+        $.ajax({
+            url: '/api/search',
+            data: {
+                name: key,
+                type: 'title'
+            },
+            type: 'post'
+        }).done(function (data) {
+            var rsData = data.data;
+            var htmlStr = '';
+            if (Array.isArray(rsData) && rsData.length) {
+                rsData.slice(0, 10).forEach(function (it) {
+                    htmlStr +=  '<li><a href="'+ it.path +'">'+ it.title +'</a></li>';
+                });
+            }
+            htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
+            $sugul.html(htmlStr);
+        });
+    }
+    else {
+        $sug.hide();
+    }
+    
 });
 
 $docxBd.on('click', '.docx-fullse', function () {
