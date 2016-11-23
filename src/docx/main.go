@@ -9,23 +9,24 @@ import (
 	"regexp"
 	"strings"
 	"util"
+	"search"
 )
 
 var (
 	index        = "/readme.md"
-	docPath      = "/Users/memee/Downloads/svn/ps-fe"
 	theme        = "default"
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
 	staticRoot   = "../../themes/" + theme
 
 	// 配置文件变量
-	port        = conf.DocxConf.GetJson("port")
-	supportInfo = conf.DocxConf.GetJson("supportInfo")
-	title       = conf.DocxConf.GetJson("title")
-	headText    = conf.DocxConf.GetJson("headText")
-	links       = conf.DocxConf.GetJson("extUrls.links")
-	label       = conf.DocxConf.GetJson("extUrls.label")
+	docPath      = conf.DocxConf.GetJson("path").(string)
+	port        = conf.DocxConf.GetJson("port").(string)
+	supportInfo = conf.DocxConf.GetJson("supportInfo").(string)
+	title       = conf.DocxConf.GetJson("title").(string)
+	headText    = conf.DocxConf.GetJson("headText").(string)
+	links       = conf.DocxConf.GetJson("extUrls.links").([]interface{})
+	label       = conf.DocxConf.GetJson("extUrls.label").(string)
 )
 
 type PageData struct {
@@ -45,7 +46,7 @@ func main() {
 	initial()
 
 	// 监听端口
-	err := http.ListenAndServe(":"+port.(string), nil)
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
@@ -59,6 +60,10 @@ func initial() {
 	// domtree 处理
 	dirData := util.ReadDirRs()
 	navStr = util.MakeNav(&dirData)
+
+	http.HandleFunc("/api/update", updateRoutes)
+
+	http.HandleFunc("/api/search", search.SearchRoutes)
 
 	http.HandleFunc("/", allRoutes)
 }
@@ -77,18 +82,18 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 		brandPd := PageData{
 			MdData:    template.HTML(content),
 			BrandData: brandArr,
-			HeadText:  headText.(string),
+			HeadText:  headText,
 		}
 		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
 	} else {
 		pd := PageData{
 			MdData:      template.HTML(content),
 			NavData:     template.HTML(navStr),
-			SupportInfo: supportInfo.(string),
-			Title:       title.(string),
-			HeadText:    headText.(string),
-			Links:       links.([]interface{}),
-			Label:       label.(string),
+			SupportInfo: supportInfo,
+			Title:       title,
+			HeadText:    headText,
+			Links:       links,
+			Label:       label,
 			BrandData:   brandArr,
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
@@ -121,4 +126,8 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.ServeFile(w, r, staticRou)
+}
+
+func updateRoutes(w http.ResponseWriter, r *http.Request) {
+	
 }
