@@ -113,15 +113,19 @@ $searchIpt.on('input', function (e) {
             },
             type: 'post'
         }).done(function (data) {
-            var rsData = data.data;
             var htmlStr = '';
-            if (Array.isArray(rsData) && rsData.length) {
-                rsData.slice(0, 10).forEach(function (it) {
-                    htmlStr +=  '<li><a href="'+ it.path +'">'+ it.title +'</a></li>';
-                });
-            }
-            htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
-            $sugul.html(htmlStr);
+            try {
+                data = JSON.parse(data);
+                if (Array.isArray(data) && data.length) {
+                    data.slice(0, 10).forEach(function (it) {
+                        htmlStr +=  '<li><a href="'+ it.path +'">'+ it.title +'</a></li>';
+                    });
+                }
+                htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
+                $sugul.html(htmlStr);
+            } catch(e){}
+            
+            
         });
     }
     else {
@@ -139,11 +143,10 @@ $docxBd.on('click', '.docx-fullse', function () {
         },
         type: 'post'
     }).done(function (data) {
-        var rsData = data.data;
         var htmlStr = '';
         var emptyString = '<div class="docx-search-nocontent">暂无匹配文档!</div>';
-        if (Array.isArray(rsData) && rsData.length) {
-            rsData.forEach(function (it) {
+        if (Array.isArray(data) && data.length) {
+            data.forEach(function (it) {
                 var content = it.content || '';
                 content = content.replace(/<(table).*?<\/\1>|<table.*?>|<\/table>/g,'');
                 htmlStr +=  [

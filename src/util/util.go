@@ -208,7 +208,6 @@ func PathExists(path string) (bool, error) {
 // 渲染模板
 func RenderTpl(path string, data interface{}, w http.ResponseWriter) {
 	t, err := template.ParseFiles(path)
-
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
