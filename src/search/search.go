@@ -87,15 +87,16 @@ func collectRs(setype string) []searchTitle{
             title := util.GetTitle(ext, content)
 
             var st = searchTitle{}
+            st.Path = strings.Replace(v, docPath, "", -1)
             ok, _ := regexp.MatchString(key, title)
+            
+            replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+            st.Title = replacedTitle
             if  ok {
-                replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
-                st.Path = strings.Replace(v, docPath, "", -1)
-                st.Title = replacedTitle
                 titleMatched = append(titleMatched, st)
             }
             if setype == "" {
-                replacedCtt := searchContentFn(string(content), title)
+                replacedCtt := searchContentFn(string(content))
                 if len(replacedCtt) > 0 {
                     st.Content = replacedCtt
                     stt = append(stt, st)
@@ -109,7 +110,7 @@ func collectRs(setype string) []searchTitle{
 
 
 // 内容搜索
-func searchContentFn(content, title string) string {
+func searchContentFn(content string) string {
     var matchedContent = []string{}
     keyRe := regexp.MustCompile(key)
     idxArr := keyRe.FindAllStringIndex(content, -1)
