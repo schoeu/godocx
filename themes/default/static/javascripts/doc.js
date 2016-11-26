@@ -143,6 +143,7 @@ $docxBd.on('click', '.docx-fullse', function () {
         },
         type: 'post'
     }).done(function (data) {
+        data = JSON.parse(data);
         var htmlStr = '';
         var emptyString = '<div class="docx-search-nocontent">暂无匹配文档!</div>';
         if (Array.isArray(data) && data.length) {
