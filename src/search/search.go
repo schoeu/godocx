@@ -120,9 +120,9 @@ func collectRs(setype string) []searchTitle{
     }
 
     if setype == "title" {
-        rsCt = append(ttTemp, titleMatched...)
+        rsCt = titleMatched
     } else {
-        rsCt = stt
+        rsCt = append(ttTemp, stt...)
     }
 
     return rsCt
