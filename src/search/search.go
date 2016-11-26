@@ -9,6 +9,7 @@ import (
     "log"
     "io"
     "strings"
+    "fmt"
 
     "conf"
     "util"
@@ -21,9 +22,9 @@ var (
     width = 360
     deep = 3
     max = 100
-    imgRe = regexp.MustCompile(`/<img.*?>/`)
-    headRe = regexp.MustCompile(`/<img.*?>/`)
-    strongRe = regexp.MustCompile(`/strong/`)
+    imgRe = regexp.MustCompile("<img.*?>")
+    headRe = regexp.MustCompile("<[h1|h2|h3|h4|h5|h6]>.*?</[h1|h2|h3|h4|h5|h6]>")
+    strongRe = regexp.MustCompile("strong")
 )
 
 type searchTitle struct {
@@ -33,7 +34,6 @@ type searchTitle struct {
 }
 
 var pathCtt = []string{}
-var matchedContent = []string{}
 
 type searchCtt []searchTitle
 
@@ -72,6 +72,7 @@ func returnJSON(js []searchTitle, w http.ResponseWriter, r *http.Request) {
 	}
     // TODO 返回对象
     io.WriteString(w, string(jsonRs))
+    fmt.Println("")
 }
 
 func collectRs(setype string) []searchTitle{
@@ -89,11 +90,9 @@ func collectRs(setype string) []searchTitle{
             ok, _ := regexp.MatchString(key, title)
             if  ok {
                 replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
-                if len(replacedTitle) > 0 && len(st.Path) > 0{
-                    st.Path = strings.Replace(v, docPath, "", -1)
-                    st.Title = replacedTitle
-                    titleMatched = append(titleMatched, st)
-                }
+                st.Path = strings.Replace(v, docPath, "", -1)
+                st.Title = replacedTitle
+                titleMatched = append(titleMatched, st)
             }
             if setype == "" {
                 replacedCtt := searchContentFn(string(content), title)
@@ -104,23 +103,19 @@ func collectRs(setype string) []searchTitle{
             }
         }
     }
-
-    //fmt.Println(strings.Index("chicken", "ken"))
-    //fmt.Println(strings.Index("我是测试啊水电费", "测"))
     // 标题匹配优先内容匹配
     return append(titleMatched, stt...)
 }
 
+
 // 内容搜索
-func searchContentFn(content, title string) string{
+func searchContentFn(content, title string) string {
+    var matchedContent = []string{}
     keyRe := regexp.MustCompile(key)
     idxArr := keyRe.FindAllStringIndex(content, -1)
-    contentLength := len(content)
     crtDp := 0
-    replacedContent := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
-    replacedContent = imgRe.ReplaceAllString(replacedContent, "")
-    replacedContent = headRe.ReplaceAllString(replacedContent, "")
-    replacedContent = strongRe.ReplaceAllString(replacedContent, "")
+    rlc := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
+    contentLength := len(rlc)
     for _, v := range idxArr {
         if crtDp < deep{
             start := v[0] - width
@@ -131,11 +126,29 @@ func searchContentFn(content, title string) string{
             if end > contentLength {
                 end = contentLength
             }
-            cutPart := replacedContent[start: end]
+            cutPart := rlc[start:end]
+            fmt.Println(start, end, len(rlc))
+            cutPart = imgRe.ReplaceAllString(cutPart, "")
+            cutPart = headRe.ReplaceAllString(cutPart, "")
+            cutPart = strongRe.ReplaceAllString(cutPart, "")
             matchedContent = append(matchedContent, cutPart)
             crtDp ++
         }
-        
     }
+    
     return strings.Join(matchedContent, "...")
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
