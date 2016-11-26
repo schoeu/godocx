@@ -81,6 +81,7 @@ func collectRs(setype string) []searchTitle{
     var stt searchCtt
     var titleMatched searchCtt
     var rsCt searchCtt
+    var ttTemp searchCtt
     for i, v := range pathCtt {
         if i < max {
             content := util.GetConent(v)
@@ -94,31 +95,36 @@ func collectRs(setype string) []searchTitle{
             replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
             st.Title = replacedTitle
 
-
+            // 标题为空则跳过
             if st.Title == "" {
                 continue
             }
-            
-            if  ok {
-                titleMatched = append(titleMatched, st)
-            }
-            
+
             if setype == "" {
                 replacedCtt := searchContentFn(string(content))
                 if len(replacedCtt) > 0 {
                     st.Content = replacedCtt
-                    stt = append(stt, st)
+                    // 标题匹配优先级高于内容匹配
+                    if ok {
+                        ttTemp = append(ttTemp, st)
+                    } else {
+                        stt = append(stt, st)
+                    }
                 }
-
-                // 标题匹配优先内容匹配
-                rsCt = stt
-
-            } else if setype == "title" {
-                rsCt =  titleMatched
-            }
-            
+            } else {
+                if  ok {
+                    titleMatched = append(titleMatched, st)
+                }
+            } 
         }
     }
+
+    if setype == "title" {
+        rsCt = append(ttTemp, titleMatched...)
+    } else {
+        rsCt = stt
+    }
+
     return rsCt
 }
 
