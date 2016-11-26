@@ -9,7 +9,6 @@ import (
     "log"
     "io"
     "strings"
-    "fmt"
 
     "conf"
     "util"
@@ -19,6 +18,12 @@ var (
     docPath = conf.DocxConf.GetJson("path").(string)
     mdReg   = ".+.md$"
     key = ""
+    width = 360
+    deep = 3
+    max = 100
+    imgRe = regexp.MustCompile(`/<img.*?>/`)
+    headRe = regexp.MustCompile(`/<img.*?>/`)
+    strongRe = regexp.MustCompile(`/strong/`)
 )
 
 type searchTitle struct {
@@ -28,6 +33,7 @@ type searchTitle struct {
 }
 
 var pathCtt = []string{}
+var matchedContent = []string{}
 
 type searchCtt []searchTitle
 
@@ -73,25 +79,30 @@ func collectRs(setype string) []searchTitle{
     keyRe := regexp.MustCompile(key)
     var stt searchCtt
     var titleMatched searchCtt
-    for _, v := range pathCtt {
-        content := util.GetConent(v)
-        ext := filepath.Ext(v)
-        title := util.GetTitle(ext, content)
+    for i, v := range pathCtt {
+        if i < max {
+            content := util.GetConent(v)
+            ext := filepath.Ext(v)
+            title := util.GetTitle(ext, content)
 
-        var st = searchTitle{}
-        ok, _ := regexp.MatchString(key, title)
-        if  ok {
-            replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
-            st.Path = strings.Replace(v, docPath, "", -1)
-            st.Title = replacedTitle
-            titleMatched = append(titleMatched, st)
+            var st = searchTitle{}
+            ok, _ := regexp.MatchString(key, title)
+            if  ok {
+                replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+                if len(replacedTitle) > 0 && len(st.Path) > 0{
+                    st.Path = strings.Replace(v, docPath, "", -1)
+                    st.Title = replacedTitle
+                    titleMatched = append(titleMatched, st)
+                }
+            }
+            if setype == "" {
+                replacedCtt := searchContentFn(string(content), title)
+                if len(replacedCtt) > 0 {
+                    st.Content = replacedCtt
+                    stt = append(stt, st)
+                }
+            }
         }
-        if setype == "" {
-            replacedCtt := searchContentFn(string(content), title)
-            st.Content = replacedCtt
-            stt = append(stt, st)
-        }
-        
     }
 
     //fmt.Println(strings.Index("chicken", "ken"))
@@ -103,15 +114,28 @@ func collectRs(setype string) []searchTitle{
 // 内容搜索
 func searchContentFn(content, title string) string{
     keyRe := regexp.MustCompile(key)
-    // idx := keyRe.FindAllStringIndex(content, -1)
-    // TODO 
     idxArr := keyRe.FindAllStringIndex(content, -1)
-    // for _, v := range idxArr {
-    //     fmt.Println(v[0])
-    // }
-    fmt.Println(idxArr)
-
+    contentLength := len(content)
+    crtDp := 0
     replacedContent := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
-    
-    return replacedContent
+    replacedContent = imgRe.ReplaceAllString(replacedContent, "")
+    replacedContent = headRe.ReplaceAllString(replacedContent, "")
+    replacedContent = strongRe.ReplaceAllString(replacedContent, "")
+    for _, v := range idxArr {
+        if crtDp < deep{
+            start := v[0] - width
+            if start < 0 {
+                start = 0
+            }
+            end := v[1] + width
+            if end > contentLength {
+                end = contentLength
+            }
+            cutPart := replacedContent[start: end]
+            matchedContent = append(matchedContent, cutPart)
+            crtDp ++
+        }
+        
+    }
+    return strings.Join(matchedContent, "...")
 }
