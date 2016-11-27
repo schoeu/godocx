@@ -19,7 +19,7 @@ var (
     docPath = conf.DocxConf.GetJson("path").(string)
     mdReg   = ".+.md$"
     key = ""
-    width = 360
+    width = 333
     deep = 3
     max = 100
     imgRe = regexp.MustCompile("<img.*?>")

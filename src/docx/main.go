@@ -8,6 +8,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"os/exec"
+	"fmt"
+
 	"util"
 	"search"
 )
@@ -44,7 +47,7 @@ type PageData struct {
 func main() {
 	// godocx 初始化
 	initial()
-
+	
 	// 监听端口
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
@@ -129,5 +132,8 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateRoutes(w http.ResponseWriter, r *http.Request) {
-	
+	docPath = "../../"
+	cmd := exec.Command(docPath, "git status")
+	out, _ := cmd.Output()
+	cmd.Start()
 }
