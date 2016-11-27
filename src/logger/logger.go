@@ -35,29 +35,30 @@ func (l *slog) New(logPath string) *slog{
     return l
 }
 
-func (l *slog) newFile(ty string, date string) *os.File{
+func (l *slog) newFile(ty string, date string){
     if ty == "all" {
-        af, err := os.OpenFile(l.path + infoLog + date , os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
-        ef, err := os.OpenFile(l.path + errorLog + date , os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
-        aw := bufio.NewWriter(af)
-        l.accessWr = aw
-        ew := bufio.NewWriter(ef)
-        l.errorWr = ew
+        l.newSimpleFile(l.path + infoLog + date, "access")
+        l.newSimpleFile(l.path + errorLog + date, "error")
+    } else if ty == "access" {
+        l.newSimpleFile(l.path + infoLog + date, "access")
+    } else if ty == "error" {
+        l.newSimpleFile(l.path + errorLog + date, "error")
     }
+}
 
-    f, err := os.OpenFile(l.path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+func (l *slog) newSimpleFile(p , ty string){
+    f, err := os.OpenFile(p , os.O_CREATE | os.O_APPEND | os.O_RDWR, 0666)
     if err != nil {
         fmt.Println(err)
     }
     defer f.Close()
     w := bufio.NewWriter(f)
-    l.accessWr = w
 
-    return f
-}
-
-func (l *slog) newSimpleFile(p string) *os.File{
-    
+    if ty == "access" {
+        l.accessWr = w
+    } else if ty == "error" {
+        l.errorWr = w
+    }
 }
 
 
