@@ -6,6 +6,7 @@ import(
     "fmt"
     "time"
     "path/filepath"
+    "strconv"  
 )
 
 var (
@@ -107,10 +108,10 @@ func  (l *slog) overSize(ty string) {
 
     if ty == "access" {
         crtAccessIndex ++
-        path = l.crtAccessLogPath + string(crtAccessIndex)
+        path = l.crtAccessLogPath + strconv.Itoa(crtAccessIndex)
     } else if ty == "error" {
         crtErrorIndex ++
-        path = l.crtErrorLogPath + string(crtErrorIndex)
+        path = l.crtErrorLogPath + strconv.Itoa(crtErrorIndex)
     }
 
     fileSize, err := fileSize(path)
