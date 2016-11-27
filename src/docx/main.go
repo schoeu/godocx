@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"os/exec"
-	"fmt"
 
 	"util"
 	"search"
@@ -134,6 +133,6 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 func updateRoutes(w http.ResponseWriter, r *http.Request) {
 	docPath = "../../"
 	cmd := exec.Command(docPath, "git status")
-	out, _ := cmd.Output()
+	cmd.Output()
 	cmd.Start()
 }
