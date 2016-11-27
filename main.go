@@ -46,6 +46,7 @@ func main() {
 	// godocx 初始化
 	initial()
 	
+	//logger.Log
 	// 监听端口
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
