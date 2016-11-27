@@ -8,6 +8,11 @@ import(
     "time"
 )
 
+var (
+    formatStr = "2006-01-02 15:04:05.000"
+    shortFormat = "2006-01-02"
+)
+
 type slog struct {
     ty string
     path string
@@ -18,7 +23,7 @@ type slog struct {
 
 func (l *slog) New() *slog{
     f := l.newFile()
-    l.date = time.Now().Format("2006-01-02")
+    l.date = time.Now().Format(shortFormat)
 
     w := bufio.NewWriter(f)
     l.w = w
@@ -39,19 +44,19 @@ func (l *slog) newFile() *os.File{
 
 // 普通信息
 func (l *slog) Info(info string) {
-    now := time.Now().Format("2006-01-02 15:04:05.000")
+    now := time.Now().Format(formatStr)
     l.w.WriteString(now + " " + info)
 }
 
 // 错误信息
 func (l *slog) Error(errorInfo string) {
-    now := time.Now().Format("2006-01-02 15:04:05.000")
+    now := time.Now().Format(formatStr)
     l.w.WriteString(now + " " + errorInfo)
 }
 
 // 文件大小&日期检测
 func (l *slog) check() {
-    now := time.Now().Format("2006-01-02")
+    now := time.Now().Format(shortFormat)
     if now != l.date {
 
     }
