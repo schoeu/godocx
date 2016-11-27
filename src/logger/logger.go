@@ -22,7 +22,7 @@ const (
     maxfileSize int64 = 1024 * 1024 * 10
 )
 
-type slog struct {
+type Logger struct {
     ty string
     path string
     size int64
@@ -33,8 +33,12 @@ type slog struct {
     crtErrorLogPath string
 }
 
+var Slogger = &Logger{
+    ty: "file",
+}
+
 // 日志模块初始化
-func (l *slog) New(logPath string) *slog{
+func (l *Logger) New(logPath string) *Logger{
     dirPath := filepath.Dir(logPath)
     l.path = dirPath
     l.date = time.Now().Format(shortFormat)
@@ -46,7 +50,7 @@ func (l *slog) New(logPath string) *slog{
 }
 
 // 日志文件管理
-func (l *slog) newFile(ty string, date string){
+func (l *Logger) newFile(ty string, date string){
     accessLogPath := l.path + infoLog + date
     errorLogPath := l.path + infoLog + date
     l.crtAccessLogPath = accessLogPath
@@ -63,7 +67,7 @@ func (l *slog) newFile(ty string, date string){
 }
 
 // 处理单个日志文件
-func (l *slog) newSimpleFile(p , ty string){
+func (l *Logger) newSimpleFile(p , ty string){
     f, err := os.OpenFile(p , os.O_CREATE | os.O_APPEND | os.O_RDWR, 0666)
     if err != nil {
         fmt.Println(err)
@@ -79,19 +83,19 @@ func (l *slog) newSimpleFile(p , ty string){
 }
 
 // 普通信息
-func (l *slog) Info(info string) {
+func (l *Logger) Info(info string) {
     now := time.Now().Format(formatStr)
     l.accessWr.WriteString(now + " " + info)
 }
 
 // 错误信息
-func (l *slog) Error(errorInfo string) {
+func (l *Logger) Error(errorInfo string) {
     now := time.Now().Format(formatStr)
     l.accessWr.WriteString(now + " " + errorInfo)
 }
 
 // 文件大小&日期检测
-func (l *slog) check() {
+func (l *Logger) check() {
     now := time.Now().Format(shortFormat)
     if now != l.date {
         l.newFile("all", l.date)
@@ -103,7 +107,7 @@ func (l *slog) check() {
     l.overSize("error")
 }
 
-func  (l *slog) overSize(ty string) {
+func  (l *Logger) overSize(ty string) {
     path := ""
 
     if ty == "access" {

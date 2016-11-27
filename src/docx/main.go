@@ -1,9 +1,7 @@
 package main
 
 import (
-	"conf"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 	"regexp"
@@ -12,6 +10,7 @@ import (
 
 	"util"
 	"search"
+	"conf"
 )
 
 var (
@@ -50,7 +49,7 @@ func main() {
 	// 监听端口
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		log.Fatal("ListenAndServe: ", err)
+		// log.Fatal("ListenAndServe: ", err)
 	}
 }
 
