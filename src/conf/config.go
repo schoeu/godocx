@@ -6,7 +6,7 @@ import (
 )
 
 var (
-	configPath = "../../docx-conf.json"
+	configPath = "./docx-conf.json"
 )
 
 type Config struct {
