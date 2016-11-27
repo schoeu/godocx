@@ -4,7 +4,6 @@ import (
 	"github.com/tidwall/gjson"
 	"io/ioutil"
 	"os"
-	"fmt"
 )
 
 var (
@@ -24,7 +23,6 @@ func (c *Config) getConf() {
 		if leng := len(os.Args); leng > 1 && os.Args[1] != "" {
 			c.path = os.Args[1]
 		}
-		fmt.Println(c.path)
 		config, err := ioutil.ReadFile(c.path)
 		if err == nil {
 			c.content = string(config)
