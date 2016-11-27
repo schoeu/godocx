@@ -5,6 +5,7 @@ import(
     "os"
     "bufio"
     "fmt"
+    "time"
 )
 
 type slog struct {
@@ -16,11 +17,9 @@ type slog struct {
 }
 
 func (l *slog) New() *slog{
-    f, err := os.OpenFile(l.path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
-    if err != nil {
-        fmt.Println(err)
-    }
-    defer f.Close()
+    f := l.newFile()
+    l.date = time.Now().Format("2006-01-02")
+
     w := bufio.NewWriter(f)
     l.w = w
     w.Write([]byte("test"))
@@ -29,12 +28,32 @@ func (l *slog) New() *slog{
     return l
 }
 
+func (l *slog) newFile() *os.File{
+    f, err := os.OpenFile(l.path, os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+    if err != nil {
+        fmt.Println(err)
+    }
+    defer f.Close()
+    return f
+}
+
 // 普通信息
 func (l *slog) Info(info string) {
-    l.w.WriteString(info)
+    now := time.Now().Format("2006-01-02 15:04:05.000")
+    l.w.WriteString(now + " " + info)
 }
 
 // 错误信息
-func (l *slog) Error(info string) {
-    l.w.WriteString(info)
+func (l *slog) Error(errorInfo string) {
+    now := time.Now().Format("2006-01-02 15:04:05.000")
+    l.w.WriteString(now + " " + errorInfo)
+}
+
+// 文件大小&日期检测
+func (l *slog) check() {
+    now := time.Now().Format("2006-01-02")
+    if now != l.date {
+
+    }
+
 }
