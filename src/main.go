@@ -18,7 +18,7 @@ var (
 	theme        = "default"
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
-	staticRoot   = "./themes/" + theme
+	staticRoot   = "../themes/" + theme
 
 	// 配置文件变量
 	docPath      = conf.DocxConf.GetJson("path").(string)
