@@ -11,6 +11,7 @@ import (
 	"util"
 	"search"
 	"zap"
+	"conf"
 )
 
 var (
@@ -21,13 +22,13 @@ var (
 	staticRoot   = "../themes/" + theme
 
 	// 配置文件变量
-	docPath      = DocxConf.GetJson("path").(string)
-	port        = DocxConf.GetJson("port").(string)
-	supportInfo = DocxConf.GetJson("supportInfo").(string)
-	title       = DocxConf.GetJson("title").(string)
-	headText    = DocxConf.GetJson("headText").(string)
-	links       = DocxConf.GetJson("extUrls.links").([]interface{})
-	label       = DocxConf.GetJson("extUrls.label").(string)
+	docPath      = conf.DocxConf.GetJson("path").(string)
+	port        = conf.DocxConf.GetJson("port").(string)
+	supportInfo = conf.DocxConf.GetJson("supportInfo").(string)
+	title       = conf.DocxConf.GetJson("title").(string)
+	headText    = conf.DocxConf.GetJson("headText").(string)
+	links       = conf.DocxConf.GetJson("extUrls.links").([]interface{})
+	label       = conf.DocxConf.GetJson("extUrls.label").(string)
 	log			= zap.Logger
 )
 
