@@ -9,12 +9,10 @@ import (
 	"regexp"
 	"strings"
 
-	"conf"
 	"util"
 )
 
 var (
-	docPath  = conf.DocxConf.GetJson("path").(string)
 	mdReg    = ".+.md$"
 	key      = ""
 	width    = 333
@@ -74,7 +72,7 @@ func collectRs(setype string) []searchTitle {
 			title := util.GetTitle(ext, content)
 
 			var st = searchTitle{}
-			st.Path = strings.Replace(v, docPath, "", -1)
+			st.Path = strings.Replace(v, DocPath, "", -1)
 			ok, _ := regexp.MatchString(key, title)
 
 			replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
