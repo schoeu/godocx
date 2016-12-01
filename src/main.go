@@ -3,15 +3,15 @@ package main
 import (
 	"html/template"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"os/exec"
 
-	"util"
-	"search"
-	"zap"
 	"conf"
+	"search"
+	"util"
+	"zap"
 )
 
 var (
@@ -22,14 +22,14 @@ var (
 	staticRoot   = "../themes/" + theme
 
 	// 配置文件变量
-	docPath      = conf.DocxConf.GetJson("path").(string)
+	docPath     = conf.DocxConf.GetJson("path").(string)
 	port        = conf.DocxConf.GetJson("port").(string)
 	supportInfo = conf.DocxConf.GetJson("supportInfo").(string)
 	title       = conf.DocxConf.GetJson("title").(string)
 	headText    = conf.DocxConf.GetJson("headText").(string)
 	links       = conf.DocxConf.GetJson("extUrls.links").([]interface{})
 	label       = conf.DocxConf.GetJson("extUrls.label").(string)
-	zlog			= zap.GetLogger()
+	zlog        = zap.GetLogger()
 )
 
 type PageData struct {
@@ -101,7 +101,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 		}
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
 	}
-	
+
 }
 
 // 路由分发
