@@ -40,8 +40,6 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		searchFn(w, r, setype)
 	}
-
-	searchTitleFn()
 }
 
 // 标题搜索
