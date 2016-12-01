@@ -2,7 +2,6 @@ package search
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -72,7 +71,6 @@ func returnJSON(js []searchTitle, w http.ResponseWriter, r *http.Request) {
 	}
 	// TODO 返回对象
 	io.WriteString(w, string(jsonRs))
-	fmt.Println("")
 }
 
 func collectRs(setype string) []searchTitle {

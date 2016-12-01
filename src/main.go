@@ -63,6 +63,8 @@ func initial() {
 	dirData := util.ReadDirRs()
 	navStr = util.MakeNav(&dirData)
 
+	search.PreProcess()
+
 	http.HandleFunc("/api/update", updateRoutes)
 
 	http.HandleFunc("/api/search", search.SearchRoutes)
