@@ -154,20 +154,5 @@ func searchContentFn(content string) string {
             crtDp ++
         }
     }
-    
     return strings.Join(matchedContent, "...")
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

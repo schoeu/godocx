@@ -10,7 +10,7 @@ import (
 
 	"util"
 	"search"
-	"conf"
+	"zap"
 )
 
 var (
@@ -21,13 +21,14 @@ var (
 	staticRoot   = "../themes/" + theme
 
 	// 配置文件变量
-	docPath      = conf.DocxConf.GetJson("path").(string)
-	port        = conf.DocxConf.GetJson("port").(string)
-	supportInfo = conf.DocxConf.GetJson("supportInfo").(string)
-	title       = conf.DocxConf.GetJson("title").(string)
-	headText    = conf.DocxConf.GetJson("headText").(string)
-	links       = conf.DocxConf.GetJson("extUrls.links").([]interface{})
-	label       = conf.DocxConf.GetJson("extUrls.label").(string)
+	docPath      = DocxConf.GetJson("path").(string)
+	port        = DocxConf.GetJson("port").(string)
+	supportInfo = DocxConf.GetJson("supportInfo").(string)
+	title       = DocxConf.GetJson("title").(string)
+	headText    = DocxConf.GetJson("headText").(string)
+	links       = DocxConf.GetJson("extUrls.links").([]interface{})
+	label       = DocxConf.GetJson("extUrls.label").(string)
+	log			= zap.Logger
 )
 
 type PageData struct {
@@ -84,6 +85,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			BrandData: brandArr,
 			HeadText:  headText,
 		}
+		log.Info(mdPath, zap.Logger.)
 		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
 	} else {
 		pd := PageData{
@@ -96,6 +98,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			Label:       label,
 			BrandData:   brandArr,
 		}
+		log.Info(mdPath)
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
 
 	}
