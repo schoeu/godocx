@@ -4,7 +4,7 @@
   "ignoreDir": ["img",".git",".svn","courseware","headline","imgs","js","less","assets"],
   "headText": "PSFE-DOC",
   "title": "PSFE",
-  "logPath": "./log",
+  "logPath": "/Users/memee/Downloads/svn/git/go/godocx/src",
   "supportInfo": "mailto:xx@xxx.com",
   "extUrls": {
     "label": "友情链接",

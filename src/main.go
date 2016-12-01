@@ -29,7 +29,7 @@ var (
 	headText    = conf.DocxConf.GetJson("headText").(string)
 	links       = conf.DocxConf.GetJson("extUrls.links").([]interface{})
 	label       = conf.DocxConf.GetJson("extUrls.label").(string)
-	log			= zap.Logger
+	zlog			= zap.GetLogger()
 )
 
 type PageData struct {
@@ -79,6 +79,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 
 	// pjax branch
 	isPjax := r.Header.Get("x-pjax") == "true"
+	zlog.Info(mdPath)
 	// 如果是pajx请求则返回片段，其他返回整模板
 	if isPjax {
 		brandPd := PageData{
@@ -86,7 +87,6 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			BrandData: brandArr,
 			HeadText:  headText,
 		}
-		log.Info(mdPath)
 		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
 	} else {
 		pd := PageData{
@@ -99,10 +99,9 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			Label:       label,
 			BrandData:   brandArr,
 		}
-		log.Info(mdPath)
 		util.RenderTpl(staticRoot+"/views/main.tmpl", pd, w)
-
 	}
+	
 }
 
 // 路由分发
