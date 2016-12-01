@@ -9,7 +9,6 @@ import (
     "strings"
 
     "github.com/mozillazg/go-pinyin"
-	"fmt"
 )
 
 var (
@@ -25,7 +24,7 @@ type searchContent struct {
     initials string
 }
 
-var scArr = []searchContent{}
+var ScArr = []searchContent{}
 var pyArgs = pinyin.NewArgs()
 
 func PreProcess() {
@@ -65,8 +64,6 @@ func getTitleInfo() {
         sc.pos = pos
         sc.title = util.GetTitle(ext, content)
 
-        scArr = append(scArr, sc)
+        ScArr = append(ScArr, sc)
     }
-
-    fmt.Println(scArr)
 }

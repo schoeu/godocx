@@ -40,6 +40,8 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 		}
 		searchFn(w, r, setype)
 	}
+
+	searchTitleFn()
 }
 
 // 标题搜索
@@ -109,6 +111,11 @@ func collectRs(setype string) []searchTitle {
 	}
 
 	return rsCt
+}
+
+// 标题搜索
+func searchTitleFn() {
+	// 载入词典
 }
 
 // 内容搜索
