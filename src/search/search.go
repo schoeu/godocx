@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -32,16 +31,14 @@ type searchTitle struct {
 	Content string `json:"content"`
 }
 
-var pathCtt = []string{}
-
 type searchCtt []searchTitle
 
 func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 	key = r.FormValue("name")
 	setype := r.FormValue("type")
 	if key != "" {
-		if len(pathCtt) == 0 {
-			filepath.Walk(docPath, walkFn)
+		if len(PathCtt) == 0 {
+			PreProcess()
 		}
 		searchFn(w, r, setype)
 	}
@@ -51,16 +48,6 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 func searchFn(w http.ResponseWriter, r *http.Request, setype string) {
 	filterRs := collectRs(setype)
 	returnJSON(filterRs, w, r)
-}
-
-func walkFn(walkPath string, info os.FileInfo, err error) error {
-	isMd, err := regexp.MatchString(mdReg, walkPath)
-	if !info.IsDir() {
-		if err == nil && isMd {
-			pathCtt = append(pathCtt, walkPath)
-		}
-	}
-	return nil
 }
 
 // 返回搜索结果
@@ -80,7 +67,7 @@ func collectRs(setype string) []searchTitle {
 	var titleMatched searchCtt
 	var rsCt searchCtt
 	var ttTemp searchCtt
-	for i, v := range pathCtt {
+	for i, v := range PathCtt {
 		if i < max {
 			content := util.GetConent(v)
 			ext := filepath.Ext(v)
