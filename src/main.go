@@ -85,7 +85,7 @@ func mdHandler(mdRelPath string, w http.ResponseWriter, r *http.Request) {
 			BrandData: brandArr,
 			HeadText:  headText,
 		}
-		log.Info(mdPath, zap.Logger.)
+		log.Info(mdPath)
 		util.RenderTpl(staticRoot+"/views/pjax.tmpl", brandPd, w)
 	} else {
 		pd := PageData{
