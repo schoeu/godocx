@@ -24,6 +24,7 @@ _testmain.go
 *.prof
 bin
 pkg
+dict
 github.com
 golang.org
 sourcegraph.com

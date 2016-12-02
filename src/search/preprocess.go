@@ -9,11 +9,14 @@ import (
     "strings"
 
     "github.com/mozillazg/go-pinyin"
+    "github.com/huichen/sego"
 )
 
 var (
     DocPath  = conf.DocxConf.GetJson("path").(string)
+    UsePinyin  = conf.DocxConf.GetJson("usePinyin").(bool)
     PathCtt = []string{}
+    DictPath = "/Users/memee/Downloads/svn/git/go/godocx/dict/dictionary.txt"
 )
 
 type searchContent struct {
@@ -27,7 +30,14 @@ type searchContent struct {
 var ScArr = []searchContent{}
 var pyArgs = pinyin.NewArgs()
 
+// 载入词典
+var Segmenter sego.Segmenter
+
 func PreProcess() {
+    if UsePinyin {
+        Segmenter.LoadDictionary(DictPath)
+    }
+    
     filepath.Walk(DocPath, walkFn)
     getTitleInfo()
 }

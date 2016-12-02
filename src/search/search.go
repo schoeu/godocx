@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"util"
+	"github.com/huichen/sego"
 )
 
 var (
@@ -31,8 +32,17 @@ type searchTitle struct {
 
 type searchCtt []searchTitle
 
+    
 func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 	key = r.FormValue("name")
+	if UsePinyin {
+		text := []byte(key)
+		segments := Segmenter.Segment(text)
+		key = sego.SegmentsToString(segments, false)
+		keySl := sego.SegmentsToSlice(segments, false)
+		key = strings.Join(keySl, "|")
+	}
+	
 	setype := r.FormValue("type")
 	if key != "" {
 		if len(PathCtt) == 0 {
