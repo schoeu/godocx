@@ -11,6 +11,7 @@ import (
 
 	"util"
 	"github.com/huichen/sego"
+	"fmt"
 )
 
 var (
@@ -23,6 +24,8 @@ var (
 	headRe   = regexp.MustCompile("<[h1|h2|h3|h4|h5|h6]>.*?</[h1|h2|h3|h4|h5|h6]>")
 	strongRe = regexp.MustCompile("strong")
 )
+
+var keySl []string
 
 type searchTitle struct {
 	Path    string `json:"path"`
@@ -39,7 +42,7 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 		text := []byte(key)
 		segments := Segmenter.Segment(text)
 		key = sego.SegmentsToString(segments, false)
-		keySl := sego.SegmentsToSlice(segments, false)
+		keySl = sego.SegmentsToSlice(segments, false)
 		key = strings.Join(keySl, "|")
 	}
 	
@@ -93,6 +96,7 @@ func collectRs(setype string) []searchTitle {
 				continue
 			}
 
+			// 内容搜索
 			if setype == "" {
 				replacedCtt := searchContentFn(string(content))
 				if len(replacedCtt) > 0 {
@@ -105,7 +109,60 @@ func collectRs(setype string) []searchTitle {
 					}
 				}
 			} else {
+				// 标题搜索
 				if ok {
+					// 标题拼音搜索
+					if UsePinyin {
+						for _, v := range ScArr {
+							//isGet := false
+							title := v.title
+							spell := v.spell
+							pos := v.pos
+							initials := v.initials
+							ems := keySl[:]
+							sIdx := strings.Index(spell, key)
+							if sIdx > -1 {
+								pIdx := util.IntIndexOf(pos, sIdx)
+								if pIdx > -1 {
+									wordCount := 0
+									for i = pIdx; i < len(pos); i++ {
+										if sIdx + len(key) <= pos[i] {
+											break
+										}
+										wordCount ++
+									}
+									fmt.Println("~~~~~~~", title, len(title), pIdx, wordCount)
+									sele := title[pIdx:wordCount]
+									ems = append(ems, sele)
+									//isGet = true
+								}
+							}
+							
+							// initials检索
+							iIdex := strings.Index(initials, key)
+							if iIdex > -1 {
+								iele := title[iIdex:len(key)]
+								ems = append(ems, iele)
+								//isGet = true
+							}
+
+							// 去重
+							ems = util.StringUniq(ems)
+							emkeys := strings.Join(ems, " ")
+							r := regexp.MustCompile("\\s+")
+							s := r.ReplaceAllString(emkeys, "|")
+							reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+							rsString := reg.ReplaceAllString(s, "")
+
+							tReg := regexp.MustCompile(rsString)
+							matchTitle := tReg.MatchString(title)
+
+							if /* isGet || */matchTitle {
+								rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+								st.Title = rpTitle
+							}
+						}
+					}
 					titleMatched = append(titleMatched, st)
 				}
 			}

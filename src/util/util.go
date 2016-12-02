@@ -89,7 +89,7 @@ func makeDomTree(crtPath string, ctt *[]fileCache) {
 		fileName := file.Name()
 		// 文件夹需要递归处理，文件则直接存容器
 		if isDir {
-			hitted := indexOf(ignoreDir, fileName)
+			hitted := IndexOf(ignoreDir, fileName) > -1
 			if !hitted {
 				subFileCache := make([]fileCache, 0)
 
@@ -224,14 +224,38 @@ func isExists(path string) bool {
 	return os.IsExist(err)
 }
 
-// []interface{} indexOf
-func indexOf(s []interface{}, oriVal string) bool {
-	for _, val := range s {
+// []interface{} IndexOf
+func IndexOf(s []interface{}, oriVal string) int {
+	for i, val := range s {
 		if val == oriVal {
-			return true
+			return i
 		}
 	}
-	return false
+	return -1
+}
+
+// []int IntIndexOf
+func IntIndexOf(s []int, oriVal int) int {
+	for i, val := range s {
+		if val == oriVal {
+			return i
+		}
+	}
+	return -1
+}
+
+// []string uniq
+func StringUniq(s []string) []string {
+	rs := []string{}
+	m := map[string]int{}
+	for _, val := range s {
+		has := m[val]
+		if has == 0 {
+			rs = append(rs, val)
+			m[val] = 1
+		}
+	}
+	return rs
 }
 
 // 转换文件名配置为map
