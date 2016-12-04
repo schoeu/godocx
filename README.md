@@ -12,7 +12,7 @@ go install
 
 
 ```
-go run main.go
+go run main.go "配置文件路径"
 ```
 
 ## 说明
@@ -92,18 +92,9 @@ go run main.go
       "name": "SUPERFRAME文档",
       "url": "http://superframe.baidu.com"
     }]
-  }
-}
-
-```
-
-## 文件夹命名配置
-
-`在文档的根目录下生成一个map.json`,json格式即可,
-
-```
-// 文件夹目录配置,key为对应的真实目录名,name为展示名,文件夹展现顺序依照该配置文件配置顺序
-[
+  },
+  // 文件夹目录配置,key为对应的真实目录名,name为展示名,文件夹展现顺序依照该配置文件配置顺序
+  docName: [
     {"dir1": {
       "name": "dir1",
       "sort": 1
@@ -114,10 +105,10 @@ go run main.go
     }},
     {"dir3": {
       "name": "dir3"
-    }}
-]
-```
+    }}]
+}
 
+```
 ## 主题
 
 默认主题在根目录下的`themes/default`,如想换其他主题请自行替换。
