@@ -105,6 +105,7 @@ func collectRs() []searchTitle {
 				continue
 			}
 			replacedCtt := searchContentFn(string(content))
+
 			if utf8.RuneCountInString(replacedCtt) > 0 {
 				st.Content = replacedCtt
 				// 标题匹配优先级高于内容匹配
@@ -165,16 +166,13 @@ func searchTt() []searchTitle  {
 				iIdex := strings.Index(initials, key)
 				if iIdex > -1 {
 					iele := []rune(title)[iIdex:iIdex + len(key)]
-					fmt.Println("~", title)
 					ems = append(ems, string(iele))
 					isHitted = true
-					fmt.Println(title, initials, key, ems)
 				}
 
 				// 去重
 				ems = util.StringUniq(ems)
-				
-
+				fmt.Println(title, initials, key, ems)
 
 				emkeys := strings.Join(ems, " ")
 				r := regexp.MustCompile("\\s+")
@@ -203,7 +201,7 @@ func searchTitleFn() {
 	// 载入词典
 }
 
-// 内容搜索
+// 内容搜索函数
 func searchContentFn(content string) string {
 	var matchedContent = []string{}
 	keyRe := regexp.MustCompile(key)
@@ -211,6 +209,7 @@ func searchContentFn(content string) string {
 	crtDp := 0
 	rlc := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
 	contentLength := utf8.RuneCountInString(rlc)
+	fmt.Println(idxArr, contentLength)
 	for _, v := range idxArr {
 		if crtDp < deep {
 			start := v[0] - width
