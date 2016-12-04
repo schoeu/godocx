@@ -8,6 +8,7 @@ import (
 	"strings"
 	"unicode/utf8"
 	"util"
+	"runtime"
 
 	"github.com/huichen/sego"
 	"github.com/mozillazg/go-pinyin"
@@ -17,7 +18,7 @@ var (
 	DocPath   = conf.DocxConf.GetJson("path").(string)
 	UsePinyin = conf.DocxConf.GetJson("usePinyin").(bool)
 	PathCtt   = []string{}
-	DictPath  = "/Users/memee/Downloads/svn/git/go/godocx/dict/dictionary.txt"
+	DictPath  = "../dict/dictionary.txt"
 )
 
 type searchContent struct {
@@ -37,7 +38,9 @@ var Segmenter sego.Segmenter
 
 func PreProcess() {
 	if UsePinyin {
-		Segmenter.LoadDictionary(DictPath)
+		_, runp, _, _ := runtime.Caller(1)
+		dirname := filepath.Dir(runp)
+		Segmenter.LoadDictionary(filepath.Join(dirname, DictPath))
 	}
 
 	filepath.Walk(DocPath, walkFn)

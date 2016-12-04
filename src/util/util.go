@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	docPath      = "/Users/memee/Downloads/svn/ps-fe"
+	docPath      = conf.DocxConf.GetJson("path").(string)
 	mdReg        = ".+.md$"
 	titleReg     = regexp.MustCompile("^\\s*#+\\s?([^#\\r\\n]+)")
 	htmlTitleReg = regexp.MustCompile("<title>(.+?)<\\/title>")

@@ -8,7 +8,7 @@ import (
 
 var (
 	configPath = ""
-	defaultP = "../docx-conf.json"
+	defaultP   = "../docx-conf.json"
 )
 
 type Config struct {
@@ -16,11 +16,10 @@ type Config struct {
 	content string
 }
 
-
 var DocxConf = &Config{path: configPath}
 
 // 解析配置文件路径
-func cmdParse() string{
+func cmdParse() string {
 	arg := ""
 	args := os.Args
 	if len(args) > 1 {
