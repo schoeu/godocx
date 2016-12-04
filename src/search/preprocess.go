@@ -41,7 +41,7 @@ func PreProcess() {
 	}
 
 	filepath.Walk(DocPath, walkFn)
-	getTitleInfo()
+	GetTitleInfo()
 }
 
 func walkFn(walkPath string, info os.FileInfo, err error) error {
@@ -55,7 +55,7 @@ func walkFn(walkPath string, info os.FileInfo, err error) error {
 }
 
 // 收集标题搜索数据
-func getTitleInfo() {
+func GetTitleInfo() {
 	for _, v := range PathCtt {
 		sc := searchContent{}
 		pos := []int{}

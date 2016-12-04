@@ -3,15 +3,16 @@ package main
 import (
 	"html/template"
 	"net/http"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"os/exec"
 
 	"conf"
 	"search"
 	"util"
 	"zap"
+	"fmt"
 )
 
 var (
@@ -133,9 +134,21 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, staticRou)
 }
 
+// webhook更新事件
 func updateRoutes(w http.ResponseWriter, r *http.Request) {
-	docPath = "./"
-	cmd := exec.Command(docPath, "git status")
-	cmd.Output()
-	cmd.Start()
+
+	f, err := exec.Command("git", "pull").Output()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	zlog.Info("git pull end.")
+	fmt.Fprintf(w, string(f))
+	// 更新搜索缓存
+	search.GetTitleInfo()
+	zlog.Info("update search info.")
+	// 更新文档树
+	// domtree 处理
+	dirData := util.ReadDirRs()
+	navStr = util.MakeNav(&dirData)
+	zlog.Info("update nav data.")
 }
