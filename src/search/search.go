@@ -26,11 +26,11 @@ var keySl []string
 var isHitted bool
 
 const (
-	width    = 333
-	deep     = 3
-	max      = 100
+	width     = 333
+	deep      = 3
+	max       = 100
 	MaxSearch = 50
-	beRed = "<span class='hljs-string'>$0</span>"
+	beRed     = "<span class='hljs-string'>$0</span>"
 )
 
 type searchTitle struct {
@@ -66,7 +66,7 @@ func searchFn(w http.ResponseWriter, r *http.Request, setype string) {
 	// 内容搜索
 	if setype == "" {
 		filterRs = collectRs()
-	} else if setype == "title"{
+	} else if setype == "title" {
 		filterRs = searchTt()
 	}
 	returnJSON(filterRs, w, r)
@@ -122,7 +122,7 @@ func collectRs() []searchTitle {
 }
 
 // 标题搜索
-func searchTt() []searchTitle  {
+func searchTt() []searchTitle {
 	var titleMatched searchCtt
 	matchTitle := false
 	var tReg *regexp.Regexp
@@ -154,7 +154,7 @@ func searchTt() []searchTitle  {
 						}
 						wordCount++
 					}
-					sele := []rune(title)[pIdx:pIdx + wordCount]
+					sele := []rune(title)[pIdx : pIdx+wordCount]
 					ems = append(ems, string(sele))
 					isHitted = true
 				}
@@ -163,11 +163,11 @@ func searchTt() []searchTitle  {
 			// initials检索
 			iIdex := strings.Index(initials, key)
 			if iIdex > -1 {
-				iele := []rune(title)[iIdex:iIdex + len(key)]
+				iele := []rune(title)[iIdex : iIdex+len(key)]
 				ems = append(ems, string(iele))
 				isHitted = true
 			}
-		} 
+		}
 
 		// 去重
 		ems = util.StringUniq(ems)
@@ -179,7 +179,7 @@ func searchTt() []searchTitle  {
 		tReg = regexp.MustCompile(rsString)
 		matchTitle = tReg.MatchString(title)
 		if isHitted || matchTitle {
-			
+
 			rpTitle := tReg.ReplaceAllString(title, beRed)
 			st.Title = rpTitle
 			titleMatched = append(titleMatched, st)
@@ -187,7 +187,6 @@ func searchTt() []searchTitle  {
 	}
 	return titleMatched
 }
-
 
 // 标题搜索
 func searchTitleFn() {

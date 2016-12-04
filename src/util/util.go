@@ -47,7 +47,7 @@ func ReadDirRs() []fileCache {
 
 	// 依配置文件循序排序
 	var sortedDocTree = dirSort()
-	
+
 	return sortedDocTree
 }
 
