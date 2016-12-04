@@ -33,6 +33,8 @@ var (
 	zlog        = zap.GetLogger()
 )
 
+var navStr string
+
 type PageData struct {
 	MdData      template.HTML
 	NavData     template.HTML
@@ -46,6 +48,7 @@ type PageData struct {
 
 // 入口函数
 func main() {
+	
 	// godocx 初始化
 	initial()
 	// 监听端口
@@ -54,8 +57,6 @@ func main() {
 		// log.Fatal("ListenAndServe: ", err)
 	}
 }
-
-var navStr string
 
 // 预处理
 func initial() {
