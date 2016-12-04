@@ -9,7 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"unicode/utf8"
-
 	"util"
 
 	"github.com/huichen/sego"
@@ -59,7 +58,7 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// 标题搜索
+// 搜索
 func searchFn(w http.ResponseWriter, r *http.Request, setype string) {
 	var filterRs searchCtt
 	// 内容搜索
@@ -71,7 +70,7 @@ func searchFn(w http.ResponseWriter, r *http.Request, setype string) {
 	returnJSON(filterRs, w, r)
 }
 
-// 返回搜索结果
+// 返回搜索结果JSON
 func returnJSON(js []searchTitle, w http.ResponseWriter, r *http.Request) {
 	jsonRs, err := json.Marshal(js)
 	if err != nil {
@@ -123,25 +122,21 @@ func collectRs() []searchTitle {
 // 标题搜索
 func searchTt() []searchTitle  {
 	var titleMatched searchCtt
-	
-	if UsePinyin {
 		// 标题拼音搜索
 		for _, sv := range ScArr {
 			//if tIdx < MaxSearch {
-				var st = searchTitle{}
-				isHitted = false
-				title := sv.title
+			var st = searchTitle{}
+			isHitted = false
+			title := sv.title
+			// 标题为空则跳过
+			if title == "" {
+				continue
+			}
+			if UsePinyin {
 				spell := sv.spell
 				pos := sv.pos
 				initials := sv.initials
-
-				// 标题为空则跳过
-				if title == "" {
-					continue
-				}
-
 				st.Path = sv.path
-
 				ems := keySl[:]
 				// 全拼检索
 				sIdx := strings.Index(spell, key)
@@ -175,23 +170,30 @@ func searchTt() []searchTitle  {
 				fmt.Println(title, initials, key, ems)
 
 				emkeys := strings.Join(ems, " ")
-				r := regexp.MustCompile("\\s+")
-				s := r.ReplaceAllString(emkeys, "|")
-				reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
-				rsString := reg.ReplaceAllString(s, "")
-
-				tReg := regexp.MustCompile(rsString)
-				matchTitle := tReg.MatchString(title)
-
-				if isHitted && matchTitle {
-					rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
-					st.Title = rpTitle
-					fmt.Println("rpTitle", rpTitle)
-					titleMatched = append(titleMatched, st)
-				}
 			}
+			r := regexp.MustCompile("\\s+")
+			s := r.ReplaceAllString(emkeys, "|")
+			reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+			rsString := reg.ReplaceAllString(s, "")
+
+			tReg := regexp.MustCompile(rsString)
+			matchTitle := tReg.MatchString(title)
+
+			if isHitted && matchTitle {
+				rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+				st.Title = rpTitle
+				fmt.Println("rpTitle", rpTitle)
+				titleMatched = append(titleMatched, st)
+			}
+		}
 		//}
-	}
+	//}
+
+
+
+
+
+
 	return titleMatched
 }
 
