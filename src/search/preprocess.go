@@ -8,7 +8,6 @@ import (
 	"strings"
 	"unicode/utf8"
 	"util"
-	"fmt"
 
 	"github.com/huichen/sego"
 	"github.com/mozillazg/go-pinyin"
@@ -43,7 +42,6 @@ func PreProcess() {
 
 	filepath.Walk(DocPath, walkFn)
 	getTitleInfo()
-	fmt.Println(ScArr)
 }
 
 func walkFn(walkPath string, info os.FileInfo, err error) error {

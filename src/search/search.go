@@ -137,12 +137,12 @@ func searchTt() []searchTitle  {
 			if title == "" {
 				continue
 			}
+			ems := keySl[:]
 			if UsePinyin {
 				spell := sv.spell
 				pos := sv.pos
 				initials := sv.initials
 				st.Path = sv.path
-				ems := keySl[:]
 				// 全拼检索
 				sIdx := strings.Index(spell, key)
 				// 所有全拼中带关键字的title
@@ -169,27 +169,21 @@ func searchTt() []searchTitle  {
 					ems = append(ems, string(iele))
 					isHitted = true
 				}
+			} 
 
-				// 去重
-				ems = util.StringUniq(ems)
-				fmt.Println(title, initials, key, ems)
-
-				emkeys := strings.Join(ems, " ")
-				r := regexp.MustCompile("\\s+")
-				s := r.ReplaceAllString(emkeys, "|")
-				reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
-				rsString := reg.ReplaceAllString(s, "")
-				tReg = regexp.MustCompile(rsString)
-				matchTitle = tReg.MatchString(title)
-			} else {
-				// 不开启pinyin的情况下，直接匹配
-				matchTitle = tReg.MatchString(title)
-			}
-
+			// 去重
+			ems = util.StringUniq(ems)
+			emkeys := strings.Join(ems, " ")
+			r := regexp.MustCompile("\\s+")
+			s := r.ReplaceAllString(emkeys, "|")
+			reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+			rsString := reg.ReplaceAllString(s, "")
+			tReg = regexp.MustCompile(rsString)
+			matchTitle = tReg.MatchString(title)
+			fmt.Println(title, matchTitle, ems)
 			if isHitted && matchTitle {
 				rpTitle := tReg.ReplaceAllString(title, beRed)
 				st.Title = rpTitle
-				fmt.Println("rpTitle", rpTitle)
 				titleMatched = append(titleMatched, st)
 			}
 		}
@@ -228,7 +222,6 @@ func searchContentFn(content string) string {
 			if end > contentLength {
 				end = contentLength
 			}
-			fmt.Println("~~~~~~~~~~~~",idxArr, contentLength, start, end)
 			cutPart := content[start:end]
 			cutPart = keyRe.ReplaceAllString(cutPart, beRed)
 			cutPart = imgRe.ReplaceAllString(cutPart, "")
