@@ -207,9 +207,8 @@ func searchContentFn(content string) string {
 	keyRe := regexp.MustCompile(key)
 	idxArr := keyRe.FindAllStringIndex(content, -1)
 	crtDp := 0
-	rlc := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
-	contentLength := utf8.RuneCountInString(rlc)
-	fmt.Println(idxArr, contentLength)
+	//contentLength := utf8.RuneCountInString(content)
+	contentLength := len(content)
 	for _, v := range idxArr {
 		if crtDp < deep {
 			start := v[0] - width
@@ -220,7 +219,9 @@ func searchContentFn(content string) string {
 			if end > contentLength {
 				end = contentLength
 			}
-			cutPart := rlc[start:end]
+			fmt.Println("~~~~~~~~~~~~",idxArr, contentLength, start, end)
+			cutPart := content[start:end]
+			cutPart = keyRe.ReplaceAllString(cutPart, "<span class='hljs-string'>$0</span>")
 			cutPart = imgRe.ReplaceAllString(cutPart, "")
 			cutPart = headRe.ReplaceAllString(cutPart, "")
 			cutPart = strongRe.ReplaceAllString(cutPart, "")
