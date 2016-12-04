@@ -18,9 +18,6 @@ import (
 var (
 	mdReg    = ".+.md$"
 	key      = ""
-	width    = 333
-	deep     = 3
-	max      = 100
 	imgRe    = regexp.MustCompile("<img.*?>")
 	headRe   = regexp.MustCompile("<[h1|h2|h3|h4|h5|h6]>.*?</[h1|h2|h3|h4|h5|h6]>")
 	strongRe = regexp.MustCompile("strong")
@@ -29,7 +26,13 @@ var (
 var keySl []string
 var isHitted bool
 
-const MaxSearch = 50
+const (
+	width    = 333
+	deep     = 3
+	max      = 100
+	MaxSearch = 50
+	beRed = "<span class='hljs-string'>$0</span>"
+)
 
 type searchTitle struct {
 	Path    string `json:"path"`
@@ -96,7 +99,7 @@ func collectRs() []searchTitle {
 			st.Path = strings.Replace(v, DocPath, "", -1)
 			ok, _ := regexp.MatchString(key, title)
 
-			replacedTitle := keyRe.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+			replacedTitle := keyRe.ReplaceAllString(title, beRed)
 			st.Title = replacedTitle
 
 			// 标题为空则跳过
@@ -122,6 +125,8 @@ func collectRs() []searchTitle {
 // 标题搜索
 func searchTt() []searchTitle  {
 	var titleMatched searchCtt
+		matchTitle := false
+		var tReg *regexp.Regexp
 		// 标题拼音搜索
 		for _, sv := range ScArr {
 			//if tIdx < MaxSearch {
@@ -170,17 +175,19 @@ func searchTt() []searchTitle  {
 				fmt.Println(title, initials, key, ems)
 
 				emkeys := strings.Join(ems, " ")
+				r := regexp.MustCompile("\\s+")
+				s := r.ReplaceAllString(emkeys, "|")
+				reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+				rsString := reg.ReplaceAllString(s, "")
+				tReg = regexp.MustCompile(rsString)
+				matchTitle = tReg.MatchString(title)
+			} else {
+				// 不开启pinyin的情况下，直接匹配
+				matchTitle = tReg.MatchString(title)
 			}
-			r := regexp.MustCompile("\\s+")
-			s := r.ReplaceAllString(emkeys, "|")
-			reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
-			rsString := reg.ReplaceAllString(s, "")
-
-			tReg := regexp.MustCompile(rsString)
-			matchTitle := tReg.MatchString(title)
 
 			if isHitted && matchTitle {
-				rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+				rpTitle := tReg.ReplaceAllString(title, beRed)
 				st.Title = rpTitle
 				fmt.Println("rpTitle", rpTitle)
 				titleMatched = append(titleMatched, st)
@@ -223,7 +230,7 @@ func searchContentFn(content string) string {
 			}
 			fmt.Println("~~~~~~~~~~~~",idxArr, contentLength, start, end)
 			cutPart := content[start:end]
-			cutPart = keyRe.ReplaceAllString(cutPart, "<span class='hljs-string'>$0</span>")
+			cutPart = keyRe.ReplaceAllString(cutPart, beRed)
 			cutPart = imgRe.ReplaceAllString(cutPart, "")
 			cutPart = headRe.ReplaceAllString(cutPart, "")
 			cutPart = strongRe.ReplaceAllString(cutPart, "")
