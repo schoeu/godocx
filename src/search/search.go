@@ -8,8 +8,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"unicode/utf8"
 
 	"util"
+
 	"github.com/huichen/sego"
 	"fmt"
 )
@@ -26,6 +28,9 @@ var (
 )
 
 var keySl []string
+var isHitted bool
+
+const MaxSearch = 50
 
 type searchTitle struct {
 	Path    string `json:"path"`
@@ -35,7 +40,6 @@ type searchTitle struct {
 
 type searchCtt []searchTitle
 
-    
 func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 	key = r.FormValue("name")
 	if UsePinyin {
@@ -45,7 +49,7 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 		keySl = sego.SegmentsToSlice(segments, false)
 		key = strings.Join(keySl, "|")
 	}
-	
+
 	setype := r.FormValue("type")
 	if key != "" {
 		if len(PathCtt) == 0 {
@@ -57,7 +61,13 @@ func SearchRoutes(w http.ResponseWriter, r *http.Request) {
 
 // 标题搜索
 func searchFn(w http.ResponseWriter, r *http.Request, setype string) {
-	filterRs := collectRs(setype)
+	var filterRs searchCtt
+	// 内容搜索
+	if setype == "" {
+		filterRs = collectRs()
+	} else if setype == "title"{
+		filterRs = searchTt()
+	}
 	returnJSON(filterRs, w, r)
 }
 
@@ -71,12 +81,11 @@ func returnJSON(js []searchTitle, w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, string(jsonRs))
 }
 
-func collectRs(setype string) []searchTitle {
+// 内容搜索
+func collectRs() []searchTitle {
 	// 替换标题
 	keyRe := regexp.MustCompile(key)
 	var stt searchCtt
-	var titleMatched searchCtt
-	var rsCt searchCtt
 	var ttTemp searchCtt
 	for i, v := range PathCtt {
 		if i < max {
@@ -95,88 +104,99 @@ func collectRs(setype string) []searchTitle {
 			if st.Title == "" {
 				continue
 			}
-
-			// 内容搜索
-			if setype == "" {
-				replacedCtt := searchContentFn(string(content))
-				if len(replacedCtt) > 0 {
-					st.Content = replacedCtt
-					// 标题匹配优先级高于内容匹配
-					if ok {
-						ttTemp = append(ttTemp, st)
-					} else {
-						stt = append(stt, st)
-					}
-				}
-			} else {
-				// 标题搜索
+			replacedCtt := searchContentFn(string(content))
+			if utf8.RuneCountInString(replacedCtt) > 0 {
+				st.Content = replacedCtt
+				// 标题匹配优先级高于内容匹配
 				if ok {
-					// 标题拼音搜索
-					if UsePinyin {
-						for _, v := range ScArr {
-							//isGet := false
-							title := v.title
-							spell := v.spell
-							pos := v.pos
-							initials := v.initials
-							ems := keySl[:]
-							sIdx := strings.Index(spell, key)
-							if sIdx > -1 {
-								pIdx := util.IntIndexOf(pos, sIdx)
-								if pIdx > -1 {
-									wordCount := 0
-									for i = pIdx; i < len(pos); i++ {
-										if sIdx + len(key) <= pos[i] {
-											break
-										}
-										wordCount ++
-									}
-									fmt.Println("~~~~~~~", title, len(title), pIdx, wordCount)
-									sele := title[pIdx:wordCount]
-									ems = append(ems, sele)
-									//isGet = true
-								}
-							}
-							
-							// initials检索
-							iIdex := strings.Index(initials, key)
-							if iIdex > -1 {
-								iele := title[iIdex:len(key)]
-								ems = append(ems, iele)
-								//isGet = true
-							}
-
-							// 去重
-							ems = util.StringUniq(ems)
-							emkeys := strings.Join(ems, " ")
-							r := regexp.MustCompile("\\s+")
-							s := r.ReplaceAllString(emkeys, "|")
-							reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
-							rsString := reg.ReplaceAllString(s, "")
-
-							tReg := regexp.MustCompile(rsString)
-							matchTitle := tReg.MatchString(title)
-
-							if /* isGet || */matchTitle {
-								rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
-								st.Title = rpTitle
-							}
-						}
-					}
-					titleMatched = append(titleMatched, st)
+					ttTemp = append(ttTemp, st)
+				} else {
+					stt = append(stt, st)
 				}
 			}
 		}
 	}
-
-	if setype == "title" {
-		rsCt = titleMatched
-	} else {
-		rsCt = append(ttTemp, stt...)
-	}
-
-	return rsCt
+	return append(ttTemp, stt...)
 }
+
+// 标题搜索
+func searchTt() []searchTitle  {
+	var titleMatched searchCtt
+	
+	if UsePinyin {
+		// 标题拼音搜索
+		for _, sv := range ScArr {
+			//if tIdx < MaxSearch {
+				var st = searchTitle{}
+				isHitted = false
+				title := sv.title
+				spell := sv.spell
+				pos := sv.pos
+				initials := sv.initials
+
+				// 标题为空则跳过
+				if title == "" {
+					continue
+				}
+
+				st.Path = sv.path
+
+				ems := keySl[:]
+				// 全拼检索
+				sIdx := strings.Index(spell, key)
+				// 所有全拼中带关键字的title
+				if sIdx > -1 {
+					pIdx := util.IntIndexOf(pos, sIdx)
+					if pIdx > -1 {
+						wordCount := 0
+						for i := pIdx; i < len(pos); i++ {
+							if sIdx+utf8.RuneCountInString(key) <= pos[i] {
+								break
+							}
+							wordCount++
+						}
+						sele := []rune(title)[pIdx:pIdx + wordCount]
+						ems = append(ems, string(sele))
+						isHitted = true
+					}
+				}
+
+				// initials检索
+				iIdex := strings.Index(initials, key)
+				if iIdex > -1 {
+					iele := []rune(title)[iIdex:iIdex + len(key)]
+					fmt.Println("~", title)
+					ems = append(ems, string(iele))
+					isHitted = true
+					fmt.Println(title, initials, key, ems)
+				}
+
+				// 去重
+				ems = util.StringUniq(ems)
+				
+
+
+				emkeys := strings.Join(ems, " ")
+				r := regexp.MustCompile("\\s+")
+				s := r.ReplaceAllString(emkeys, "|")
+				reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+				rsString := reg.ReplaceAllString(s, "")
+
+				tReg := regexp.MustCompile(rsString)
+				matchTitle := tReg.MatchString(title)
+
+				if isHitted && matchTitle {
+					rpTitle := tReg.ReplaceAllString(title, "<span class='hljs-string'>$0</span>")
+					st.Title = rpTitle
+					fmt.Println("rpTitle", rpTitle)
+					titleMatched = append(titleMatched, st)
+				}
+			}
+		//}
+	}
+	return titleMatched
+}
+
 
 // 标题搜索
 func searchTitleFn() {
@@ -190,7 +210,7 @@ func searchContentFn(content string) string {
 	idxArr := keyRe.FindAllStringIndex(content, -1)
 	crtDp := 0
 	rlc := keyRe.ReplaceAllString(content, "<span class='hljs-string'>$0</span>")
-	contentLength := len(rlc)
+	contentLength := utf8.RuneCountInString(rlc)
 	for _, v := range idxArr {
 		if crtDp < deep {
 			start := v[0] - width
