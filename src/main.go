@@ -136,8 +136,10 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 
 // webhook更新事件
 func updateRoutes(w http.ResponseWriter, r *http.Request) {
-
-	f, err := exec.Command("git", "pull").Output()
+	
+	cmd := exec.Command("git", "pull")
+	cmd.Path = docPath
+	f, err := cmd.Output()
 	if err != nil {
 		fmt.Println(err.Error())
 	}

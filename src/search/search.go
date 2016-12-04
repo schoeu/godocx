@@ -10,6 +10,7 @@ import (
 	"strings"
 	"unicode/utf8"
 	"util"
+	"flag"
 
 	"github.com/huichen/sego"
 )
