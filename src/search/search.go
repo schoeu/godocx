@@ -12,7 +12,6 @@ import (
 	"util"
 
 	"github.com/huichen/sego"
-	"fmt"
 )
 
 var (
@@ -125,76 +124,67 @@ func collectRs() []searchTitle {
 // 标题搜索
 func searchTt() []searchTitle  {
 	var titleMatched searchCtt
-		matchTitle := false
-		var tReg *regexp.Regexp
-		// 标题拼音搜索
-		for _, sv := range ScArr {
-			//if tIdx < MaxSearch {
-			var st = searchTitle{}
-			isHitted = false
-			title := sv.title
-			// 标题为空则跳过
-			if title == "" {
-				continue
-			}
-			ems := keySl[:]
-			if UsePinyin {
-				spell := sv.spell
-				pos := sv.pos
-				initials := sv.initials
-				st.Path = sv.path
-				// 全拼检索
-				sIdx := strings.Index(spell, key)
-				// 所有全拼中带关键字的title
-				if sIdx > -1 {
-					pIdx := util.IntIndexOf(pos, sIdx)
-					if pIdx > -1 {
-						wordCount := 0
-						for i := pIdx; i < len(pos); i++ {
-							if sIdx+utf8.RuneCountInString(key) <= pos[i] {
-								break
-							}
-							wordCount++
+	matchTitle := false
+	var tReg *regexp.Regexp
+	// 标题拼音搜索
+	for _, sv := range ScArr {
+		var st = searchTitle{}
+		isHitted = false
+		title := sv.title
+		// 标题为空则跳过
+		if title == "" {
+			continue
+		}
+		ems := keySl[:]
+		if UsePinyin {
+			spell := sv.spell
+			pos := sv.pos
+			initials := sv.initials
+			st.Path = sv.path
+			// 全拼检索
+			sIdx := strings.Index(spell, key)
+			// 所有全拼中带关键字的title
+			if sIdx > -1 {
+				pIdx := util.IntIndexOf(pos, sIdx)
+				if pIdx > -1 {
+					wordCount := 0
+					for i := pIdx; i < len(pos); i++ {
+						if sIdx+utf8.RuneCountInString(key) <= pos[i] {
+							break
 						}
-						sele := []rune(title)[pIdx:pIdx + wordCount]
-						ems = append(ems, string(sele))
-						isHitted = true
+						wordCount++
 					}
-				}
-
-				// initials检索
-				iIdex := strings.Index(initials, key)
-				if iIdex > -1 {
-					iele := []rune(title)[iIdex:iIdex + len(key)]
-					ems = append(ems, string(iele))
+					sele := []rune(title)[pIdx:pIdx + wordCount]
+					ems = append(ems, string(sele))
 					isHitted = true
 				}
-			} 
-
-			// 去重
-			ems = util.StringUniq(ems)
-			emkeys := strings.Join(ems, " ")
-			r := regexp.MustCompile("\\s+")
-			s := r.ReplaceAllString(emkeys, "|")
-			reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
-			rsString := reg.ReplaceAllString(s, "")
-			tReg = regexp.MustCompile(rsString)
-			matchTitle = tReg.MatchString(title)
-			fmt.Println(title, matchTitle, ems)
-			if isHitted && matchTitle {
-				rpTitle := tReg.ReplaceAllString(title, beRed)
-				st.Title = rpTitle
-				titleMatched = append(titleMatched, st)
 			}
+
+			// initials检索
+			iIdex := strings.Index(initials, key)
+			if iIdex > -1 {
+				iele := []rune(title)[iIdex:iIdex + len(key)]
+				ems = append(ems, string(iele))
+				isHitted = true
+			}
+		} 
+
+		// 去重
+		ems = util.StringUniq(ems)
+		emkeys := strings.Join(ems, " ")
+		r := regexp.MustCompile("\\s+")
+		s := r.ReplaceAllString(emkeys, "|")
+		reg := regexp.MustCompile("^(\\|)*|(\\|)*$")
+		rsString := reg.ReplaceAllString(s, "")
+		tReg = regexp.MustCompile(rsString)
+		matchTitle = tReg.MatchString(title)
+		if isHitted || matchTitle {
+			
+			rpTitle := tReg.ReplaceAllString(title, beRed)
+			st.Title = rpTitle
+			titleMatched = append(titleMatched, st)
 		}
-		//}
-	//}
-
-
-
-
-
-
+	}
 	return titleMatched
 }
 
