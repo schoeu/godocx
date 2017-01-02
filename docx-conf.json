@@ -7,7 +7,7 @@
   "logPath": "/Users/memee/Downloads/svn/git/go/godocx/src",
   "supportInfo": "mailto:xx@xxx.com",
   "usePinyin": true,
-  "theme": "antd",
+  "theme": "default",
   "extUrls": {
     "label": "友情链接",
     "links":[{
