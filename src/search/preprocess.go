@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"unicode/utf8"
 	"util"
-	"runtime"
 
 	"github.com/huichen/sego"
 	"github.com/mozillazg/go-pinyin"

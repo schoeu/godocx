@@ -3,24 +3,23 @@ package main
 import (
 	"html/template"
 	"net/http"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
-	"os/exec"
 
 	"conf"
+	"fmt"
 	"search"
 	"util"
 	"zap"
-	"fmt"
 )
 
 var (
 	index        = "/readme.md"
-	theme        = "default"
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
-	staticRoot   = "../themes/" + theme
+	staticRoot   = "../themes/" + conf.DocxConf.GetJson("theme").(string)
 
 	// 配置文件变量
 	docPath     = conf.DocxConf.GetJson("path").(string)
@@ -48,7 +47,7 @@ type PageData struct {
 
 // 入口函数
 func main() {
-	
+
 	// godocx 初始化
 	initial()
 	// 监听端口
@@ -137,7 +136,7 @@ func staticServer(w http.ResponseWriter, r *http.Request) {
 
 // webhook更新事件
 func updateRoutes(w http.ResponseWriter, r *http.Request) {
-	
+
 	cmd := exec.Command("git", "pull")
 	cmd.Path = docPath
 	f, err := cmd.Output()
