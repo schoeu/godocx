@@ -19,9 +19,9 @@ var (
 	index        = "/readme.md"
 	mdReg        = ".+.md$"
 	staticPrefix = "static"
-	staticRoot   = "../themes/" + conf.DocxConf.GetJson("theme").(string)
 
 	// 配置文件变量
+	staticRoot   = "../themes/" + conf.DocxConf.GetJson("theme").(string)
 	docPath     = conf.DocxConf.GetJson("path").(string)
 	port        = conf.DocxConf.GetJson("port").(string)
 	supportInfo = conf.DocxConf.GetJson("supportInfo").(string)
