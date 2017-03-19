@@ -188,11 +188,6 @@ func searchTt() []searchTitle {
 	return titleMatched
 }
 
-// 标题搜索
-func searchTitleFn() {
-	// 载入词典
-}
-
 // 内容搜索函数
 func searchContentFn(content string) string {
 	var matchedContent = []string{}
