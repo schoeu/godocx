@@ -109,5 +109,5 @@ go run main.go "配置文件路径"
 ```
 ## 主题
 
-开箱自带两套皮肤`default`,`antd`,默认为`default`主题。
+开箱自带一套`default`主题皮肤。
 目录为`themes/default`与`themes/antd`,如想换其他主题请自行替换或开发。

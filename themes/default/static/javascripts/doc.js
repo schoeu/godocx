@@ -9,71 +9,45 @@ var $docxBd = $('.docx-body');
 var $docxDir = $('.docx-dir>a');
 var $searchIpt = $('.docx-searchkey');
 var $sug = $('.docx-sug');
+var $sugH = 200;
+var $liHeight = 39;
 var $sugul = $('.docx-sugul');
 var actCls = 'docx-sugact';
 var winH = $win.outerHeight();
 var lisH = $docxTitle.first().height();
 var $scollapse = $('#sidebar-collapse');
-/**
- * 兼容老平台
- * */
-var hash = location.hash || '';
-var path;
-// 兼容老链接
-if (path = /^(^#\/){1}(.+)/.exec(hash)) {
-    if (Array.isArray(path)) {
-        $.getJSON({
-            url: '/javascripts/patch.json'
-        }).done(function (data) {
-            if (!$.isEmptyObject(data)) {
-                var pathStr = path[2] || '';
-                var pathSep = pathStr.split('/');
-                var rsPath = pathSep.map(function (it) {
-                    return data[it.replace('+', ' ')] || it;
-                }).join('/');
-                location.href = rsPath + '.md';
-            }
-        });
-    }
-}
+var $fixedstyle= $('.docx-fixedstyle');
 
 /**
 * pjax委托
 * */
 if ($.support.pjax) {
-    $(document).pjax('a[href^="/"]', '.docx-marked-wrap');
+    $(document).pjax('a[href^="/"]', '.docx-marked-wrap', {timeout: 1200});
     // 使用pjax更底层的方法,可控性更强
     /*$(document).on('click', 'a[href^="/"]', function(event) {
         var container = $docxBd.find('.docx-marked-wrap');
         $.pjax.click(event, {container: container})
     });*/
+
     $(document).on('pjax:complete', function() {
-        // fixed safari animate bug.
-        setTimeout(function () {
-            $('.docx-fade').addClass('docx-fade-active');
-        }, 0);
-
         // 目录切换
-        // changeMenu();
-
+        changeMenu();
         $sug.hide();
     });
 }
 
-$win.load(function () {
-    $('.docx-fade').addClass('docx-fade-active');
 
+$(function (){
     $win.on('resize', function () {
         $docxBd.height($win.height() - $navbarH);
         winH = $win.outerHeight();
     });
 
     $docxBd.height($win.height() - $navbarH);
-
-    // 目录切换
-    // changeMenu();
-
+    $fixedstyle.remove();
 });
+
+$win.load(changeMenu);
 
 function changeMenu() {
     $('.active,.subactive').removeClass('active subactive');
@@ -88,13 +62,11 @@ function changeMenu() {
     $pathDom.addClass('docx-active').parents().remove('docx-active');
 
     var crtLis = $('.docx-active');
-    if (crtLis.length) {
-        var offsetTop = crtLis.offset().top;
-        // 如果选中目录不在可视范围则滚动到可视范围
-        if (offsetTop > winH - lisH || offsetTop < 0) {
-            // $scollapse.scrollTop(offsetTop - winH/5);
-            $scollapse.animate({scrollTop: offsetTop - winH/5}, 200);
-        }
+    var offsetTop = crtLis.offset().top;
+    // 如果选中目录不在可视范围则滚动到可视范围
+    if (offsetTop > winH - lisH || offsetTop < 0) {
+        // $scollapse.scrollTop(offsetTop - winH/5);
+        $scollapse.animate({scrollTop: offsetTop - winH/5}, 200);
     }
 }
 
@@ -103,35 +75,34 @@ function changeMenu() {
  * */
 $searchIpt.on('input', function (e) {
     var key =$searchIpt.val();
-    if (key) {
-        $sug.show();
-        $.ajax({
-            url: '/api/search',
-            data: {
-                name: key,
-                type: 'title'
-            },
-            type: 'post'
-        }).done(function (data) {
-            var htmlStr = '';
-            try {
-                data = JSON.parse(data);
-                if (Array.isArray(data) && data.length) {
-                    data.slice(0, 10).forEach(function (it) {
-                        htmlStr +=  '<li><a href="'+ it.path +'">'+ it.title +'</a></li>';
-                    });
-                }
-                htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
-                $sugul.html(htmlStr);
-            } catch(e){}
-            
-            
-        });
-    }
-    else {
+    if (!key.trim()) {
         $sug.hide();
+        return;
+    } else {
+        $sug.show()
     }
-    
+    $.ajax({
+        url: '/api/search',
+        data: {
+            name: key,
+            type: 'title'
+        },
+        type: 'post'
+    }).done(function (data) {
+        var rsData = data.data;
+        var htmlStr = '';
+        if (Array.isArray(rsData) && rsData.length) {
+            rsData.forEach(function (it, i) {
+                var sugactCls = '';
+                if (i === 0) {
+                    sugactCls = 'docx-sugact';
+                }
+                htmlStr +=  '<li><a href="'+ it.path +'" class="' + sugactCls + '">'+ it.title +'</a></li>';
+            });
+        }
+        htmlStr += '<li class="docx-fullse"><a href="#">全文搜索<span class="hljs-string">' + key + '</span></a></li>';
+        $sugul.html(htmlStr);
+    });
 });
 
 $docxBd.on('click', '.docx-fullse', function () {
@@ -143,11 +114,11 @@ $docxBd.on('click', '.docx-fullse', function () {
         },
         type: 'post'
     }).done(function (data) {
-        data = JSON.parse(data);
+        var rsData = data.data;
         var htmlStr = '';
         var emptyString = '<div class="docx-search-nocontent">暂无匹配文档!</div>';
-        if (Array.isArray(data) && data.length) {
-            data.forEach(function (it) {
+        if (Array.isArray(rsData) && rsData.length) {
+            rsData.forEach(function (it) {
                 var content = it.content || '';
                 content = content.replace(/<(table).*?<\/\1>|<table.*?>|<\/table>/g,'');
                 htmlStr +=  [
@@ -194,6 +165,11 @@ $searchIpt.on('keydown', function (e) {
         else {
             $act.removeClass();
             $lis.last().addClass(actCls);
+            $sug.scrollTop($sugul.height() - $sugH);
+        }
+
+        if ($act.offset() && ($act.offset().top > $sugH)) {
+            $sug.scrollTop($sug.scrollTop() - 39);
         }
     }
     else if(keyCode === 40){
@@ -204,7 +180,12 @@ $searchIpt.on('keydown', function (e) {
         }
         else {
             $act.removeClass();
+            $sug.scrollTop(0);
             $lis.first().addClass(actCls);
+        }
+
+        if ($act.offset() && ($act.offset().top > $sugH)) {
+            $sug.scrollTop($sug.scrollTop() + $liHeight);
         }
     }
     else if (keyCode === 13) {
